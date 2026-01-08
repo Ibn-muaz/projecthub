@@ -159,21 +159,28 @@ def contact_page(request):
 
 # ADD THESE TWO FUNCTIONS - THEY WERE MISSING
 def login_page(request):
-    """Handle user login"""
+    """Handle user login with email"""
     if request.user.is_authenticated:
         return redirect('landing')
     
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        
+        # Find user by email and authenticate
+        from accounts.models import User
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
         
         if user is not None:
             login(request, user)
             next_url = request.GET.get('next', 'landing')
             return redirect(next_url)
         else:
-            messages.error(request, 'Invalid username or password')
+            messages.error(request, 'Invalid email or password')
     
     return render(request, 'core/login.html')
 
