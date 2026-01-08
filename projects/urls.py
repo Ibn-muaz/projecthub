@@ -25,4 +25,7 @@ urlpatterns = [
     
     # Admin endpoints
     path('admin/stats/overview/', views.AdminStatsOverviewView.as_view(), name='admin-stats-overview'),
+    
+    # Tools
+    path('tools/topic-generator/', views.TopicGeneratorView.as_view(), name='topic-generator-api'),
 ]
