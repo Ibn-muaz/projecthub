@@ -4,7 +4,8 @@ from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
+
+from accounts.forms import UserRegistrationForm
 
 from projects.models import ProjectMaterial
 from projects.constants import NSUK_DEPARTMENTS, FACULTY_DEPARTMENTS
@@ -183,7 +184,7 @@ def register_page(request):
         return redirect('landing')
     
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             # Auto-login after registration
@@ -194,6 +195,6 @@ def register_page(request):
             # If form is invalid, pass errors to template
             return render(request, 'core/register.html', {'form': form})
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     
     return render(request, 'core/register.html', {'form': form})
