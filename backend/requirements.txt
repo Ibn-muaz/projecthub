@@ -22,5 +22,8 @@ pypdf==5.1.0
 # HTTP requests (for Paystack)
 requests==2.31.0
 
+# Required for drf-yasg on Python 3.12+
+setuptools>=70.0.0
+
 # Redis (optional, for caching)
 redis==5.0.1
