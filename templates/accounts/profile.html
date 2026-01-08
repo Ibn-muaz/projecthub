@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - ProjectHub{% endblock %}
+
+{% block content %}
+<div class="py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+      <!-- Profile Header -->
+      <div class="bg-gradient-to-r from-sky-600 to-emerald-600 px-8 py-12">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <div class="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center">
+              <span class="text-3xl font-bold text-white">{{ user.username|first|upper }}</span>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-white">{{ user.username }}</h1>
+              <p class="text-white/90 mt-1">Member since {{ user.date_joined|date:"F Y" }}</p>
+            </div>
+          </div>
+          <a href="{% url 'logout' %}" 
+             class="inline-flex items-center px-6 py-3 border-2 border-white text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+            Logout
+          </a>
+        </div>
+      </div>
+      
+      <!-- Profile Content -->
+      <div class="p-8">
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Account Information -->
+          <div class="bg-gray-50 rounded-xl p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Account Information</h2>
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm text-gray-500">Username</p>
+                <p class="font-medium">{{ user.username }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Email</p>
+                <p class="font-medium">
+                  {% if user.email %}
+                    {{ user.email }}
+                  {% else %}
+                    <span class="text-gray-400">Not set</span>
+                  {% endif %}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Account Status</p>
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium">
+                  Active
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quick Actions -->
+          <div class="bg-gray-50 rounded-xl p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+            <div class="space-y-3">
+              <a href="{% url 'me-purchases' %}" 
+                 class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-sky-300 hover:shadow-md transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center group-hover:bg-sky-200 transition-colors duration-200">
+                    <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">My Purchases</p>
+                    <p class="text-sm text-gray-500">View purchased projects</p>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400 group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+              
+              <a href="{% url 'me-downloads' %}" 
+                 class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-300 group">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors duration-200">
+                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">My Downloads</p>
+                    <p class="text-sm text-gray-500">Access downloaded files</p>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+          <div class="text-center py-8">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <p class="text-gray-500">No recent activity</p>
+            <p class="text-sm text-gray-400 mt-1">Your activity will appear here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Final Year Project Topic Generator - ProjectHub{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-semibold text-slate-900 mb-4">Final Year Project Topic Generator</h1>
+<p class="text-sm text-slate-600 mb-4">
+  Select your department in Nasarawa State University, Keffi and generate suggested final year project topics.
+</p>
+
+<div class="bg-white border border-slate-200 rounded-xl p-4 max-w-xl">
+  <form id="topicForm" class="space-y-4 text-sm">
+    <div>
+      <label class="block text-xs font-medium text-slate-600 mb-1">Department</label>
+      <select name="department" id="departmentSelect" required
+              class="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+        <option value="" disabled selected>Select your department</option>
+        {% for dept in departments %}
+          <option value="{{ dept }}">{{ dept }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-slate-600 mb-1">Optional Keywords (e.g. e-learning, climate change)</label>
+      <input type="text" name="keywords" id="keywordsInput"
+             class="w-full rounded-md border border-slate-300 px-3 py-2" />
+    </div>
+    <button type="submit"
+            class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700">
+      Generate Topics
+    </button>
+  </form>
+
+  <div id="topicsSection" class="mt-6 hidden">
+    <h2 class="text-sm font-semibold text-slate-800 mb-2">Suggested Topics</h2>
+    <ul id="topicsList" class="list-disc list-inside space-y-1 text-sm text-slate-700"></ul>
+  </div>
+
+  <p id="topicError" class="mt-3 text-xs text-red-500 hidden"></p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  const topicForm = document.getElementById('topicForm');
+  const topicsSection = document.getElementById('topicsSection');
+  const topicsList = document.getElementById('topicsList');
+  const topicError = document.getElementById('topicError');
+
+  topicForm?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    topicError.classList.add('hidden');
+    topicError.textContent = '';
+    topicsSection.classList.add('hidden');
+    topicsList.innerHTML = '';
+
+    const formData = new FormData(topicForm);
+    const department = formData.get('department');
+    const keywords = formData.get('keywords');
+
+    if (!department) {
+      topicError.textContent = 'Please select a department.';
+      topicError.classList.remove('hidden');
+      return;
+    }
+
+    const accessToken = localStorage.getItem('accessToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (accessToken) {
+      headers['Authorization'] = 'Bearer ' + accessToken;
+    }
+
+    try {
+      const resp = await fetch('/api/tools/topic-generator/', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ department, keywords }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        topicError.textContent = data.detail || 'Could not generate topics. Please try again.';
+        topicError.classList.remove('hidden');
+        return;
+      }
+
+      const topics = data.topics || [];
+      if (!topics.length) {
+        topicError.textContent = 'No topics generated. Try different keywords.';
+        topicError.classList.remove('hidden');
+        return;
+      }
+
+      topics.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        topicsList.appendChild(li);
+      });
+      topicsSection.classList.remove('hidden');
+    } catch (err) {
+      console.error(err);
+      topicError.textContent = 'Network error while generating topics.';
+      topicError.classList.remove('hidden');
+    }
+  });
+</script>
+{% endblock %}

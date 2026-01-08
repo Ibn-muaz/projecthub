@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block title %}ProjectHub - Verified Final Year Project Materials{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-12 md:py-20 overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-emerald-50/30"></div>
+  <div class="container mx-auto px-4 md:px-6 relative">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <!-- Left Content -->
+      <div class="max-w-2xl">
+        <div
+          class="inline-flex items-center gap-2 bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-medium mb-6">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd" />
+          </svg>
+          <span>100+ Universities Trusted</span>
+        </div>
+
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          Verified
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-emerald-600">
+            Final Year Projects
+          </span>
+          for Academic Excellence
+        </h1>
+
+        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+          Access thousands of approved project materials across universities, polytechnics & colleges.
+          Preview before purchase with secure instant downloads.
+        </p>
+
+        <!-- Search Form -->
+        <div class="mb-8">
+          <form action="{% url 'project-list-page' %}" method="get" class="space-y-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1">
+                <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" name="q" placeholder="Search projects, topics, departments..."
+                  class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none transition-all duration-300 text-base" />
+              </div>
+              <button type="submit"
+                class="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-sky-600 to-emerald-600 text-white font-semibold text-base hover:from-sky-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl shadow-sky-200 hover:shadow-sky-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Search Projects
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <span class="text-sm text-gray-500">Trending:</span>
+              <a href="{% url 'project-list-page' %}?q=machine+learning"
+                class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full transition-colors duration-200">
+                Machine Learning
+              </a>
+              <a href="{% url 'project-list-page' %}?q=web+application"
+                class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full transition-colors duration-200">
+                Web Application
+              </a>
+              <a href="{% url 'project-list-page' %}?q=data+analysis"
+                class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full transition-colors duration-200">
+                Data Analysis
+              </a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900">100% Verified</p>
+              <p class="text-xs text-gray-500">Quality Checked</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900">Secure Payment</p>
+              <p class="text-xs text-gray-500">Paystack Protected</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Content - Featured Projects -->
+      <div class="lg:pl-10">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div class="bg-gradient-to-r from-sky-600 to-emerald-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold text-white">Featured Projects</h2>
+              <a href="{% url 'project-list-page' %}"
+                class="text-sm text-white/90 hover:text-white font-medium flex items-center gap-1">
+                View All
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class="p-2 max-h-[500px] overflow-y-auto custom-scrollbar">
+            {% for project in featured_projects %}
+            <a href="{% url 'project-detail-page' slug=project.slug %}"
+              class="group flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border-b border-gray-100 last:border-b-0">
+              <div class="flex-shrink-0">
+                <div
+                  class="w-12 h-12 rounded-lg bg-gradient-to-br from-sky-100 to-emerald-100 flex items-center justify-center group-hover:from-sky-200 group-hover:to-emerald-200 transition-all duration-300">
+                  <svg class="w-6 h-6 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                      d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="font-semibold text-gray-900 group-hover:text-sky-700 truncate transition-colors duration-200">
+                  {{ project.title }}</h3>
+                <div class="flex items-center gap-3 mt-1">
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">{{ project.department }}</span>
+                  <span class="text-xs text-gray-500">{{ project.year }}</span>
+                  {% if project.price %}
+                  <span class="text-xs font-semibold text-emerald-600 ml-auto">₦{{ project.price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 group-hover:text-sky-600 flex-shrink-0 transition-colors duration-200"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+            {% empty %}
+            <div class="p-8 text-center">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p class="text-gray-500">No featured projects yet.</p>
+              <p class="text-sm text-gray-400 mt-1">Check back soon for new additions</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Browse by Faculty Section -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4 md:px-6">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Browse by Faculty & Department
+      </h2>
+      <p class="text-lg text-gray-600">
+        Explore thousands of verified project materials across various academic disciplines
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for faculty, depts in faculty_departments.items %}
+      <div
+        class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+        <div class="bg-gradient-to-r from-sky-500 to-emerald-500 px-6 py-4">
+          <h3 class="text-lg font-bold text-white">{{ faculty }}</h3>
+          <p class="text-sm text-white/90 mt-1">{{ depts|length }} departments</p>
+        </div>
+        <div class="p-6">
+          <ul class="space-y-3">
+            {% for dept in depts|slice:":5" %}
+            <li>
+              <a href="{% url 'project-list-page' %}?department={{ dept|urlencode }}"
+                class="flex items-center justify-between text-gray-700 hover:text-sky-700 group-hover:text-gray-800 transition-colors duration-200">
+                <span class="text-sm font-medium truncate">{{ dept }}</span>
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-sky-500 flex-shrink-0" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </li>
+            {% endfor %}
+            {% if depts|length > 5 %}
+            <li class="pt-2 border-t border-gray-100">
+              <a href="{% url 'project-list-page' %}?faculty={{ faculty|urlencode }}"
+                class="text-sm font-medium text-sky-600 hover:text-sky-700 flex items-center gap-1">
+                View all {{ depts|length }} departments
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-12">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <p class="text-gray-500">No departments available yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- CTA Section -->
+    <div class="mt-16 text-center">
+      <div class="bg-gradient-to-r from-sky-600 to-emerald-600 rounded-2xl p-8 md:p-12 shadow-xl">
+        <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+          Ready to Find Your Perfect Project?
+        </h3>
+        <p class="text-white/90 mb-8 max-w-2xl mx-auto">
+          Join thousands of students who have successfully completed their final year projects with our verified
+          materials
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="{% url 'project-list-page' %}"
+            class="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-white text-sky-600 font-semibold hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl">
+            Browse All Projects
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          {% if not user.is_authenticated %}
+          <a href="{% url 'web-register' %}"
+            class="inline-flex items-center justify-center px-8 py-3 rounded-xl border-2 border-white text-white font-semibold hover:bg-white/10 transition-all duration-300">
+            Get Started Free
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add custom scrollbar styling -->
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+{% endblock %}

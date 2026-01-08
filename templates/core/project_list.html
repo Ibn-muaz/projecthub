@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Browse Project Materials - ProjectHub{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-semibold text-slate-900 mb-4">Browse Project Materials</h1>
+
+<div class="mb-6">
+  <button id="toggleFilters"
+    class="md:hidden w-full flex items-center justify-between bg-white border border-slate-200 p-3 rounded-lg text-sm font-medium text-slate-700 mb-2">
+    <span><i class="fas fa-filter mr-2 text-sky-600"></i>Filters & Search</span>
+    <i class="fas fa-chevron-down transition-transform duration-200" id="filterIcon"></i>
+  </button>
+
+  <form method="get" id="filterForm"
+    class="hidden md:grid md:grid-cols-5 gap-3 text-sm bg-white md:bg-transparent p-4 md:p-0 rounded-lg border md:border-0 border-slate-200">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search keywords..."
+      class="col-span-full md:col-span-1 rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 w-full" />
+    <input type="text" name="department" value="{{ request.GET.department }}" placeholder="Department"
+      class="rounded-md border border-slate-300 px-3 py-2 w-full" />
+    <input type="text" name="course" value="{{ request.GET.course }}" placeholder="Course"
+      class="rounded-md border border-slate-300 px-3 py-2 w-full" />
+    <input type="text" name="institution" value="{{ request.GET.institution }}" placeholder="Institution"
+      class="rounded-md border border-slate-300 px-3 py-2 w-full" />
+    <button type="submit"
+      class="bg-sky-600 text-white rounded-md px-4 py-2 hover:bg-sky-700 font-medium transition-colors">
+      Search
+    </button>
+  </form>
+</div>
+
+<script>
+  const toggleFilters = document.getElementById('toggleFilters');
+  const filterForm = document.getElementById('filterForm');
+  const filterIcon = document.getElementById('filterIcon');
+
+  toggleFilters?.addEventListener('click', () => {
+    filterForm.classList.toggle('hidden');
+    filterIcon.style.transform = filterForm.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+  });
+</script>
+
+<div class="grid md:grid-cols-2 gap-4">
+  {% for project in projects %}
+  <a href="{% url 'project-detail-page' slug=project.slug %}"
+    class="block bg-white border border-slate-200 rounded-xl p-4 hover:border-sky-200 hover:shadow-sm">
+    <p class="text-sm font-semibold text-slate-900 mb-1 line-clamp-2">{{ project.title }}</p>
+    <p class="text-xs text-slate-500 mb-2">{{ project.department }} • {{ project.course }} • {{ project.year }}</p>
+    <p class="text-xs text-slate-600 mb-3 line-clamp-3">{{ project.abstract }}</p>
+    <div class="flex items-center justify-between text-xs text-slate-500">
+      <span class="font-semibold text-sky-700">₦{{ project.price }}</span>
+      <span>{{ project.download_count }} downloads</span>
+    </div>
+  </a>
+  {% empty %}
+  <p class="text-sm text-slate-500">No projects found for your filters.</p>
+  {% endfor %}
+</div>
+{% endblock %}

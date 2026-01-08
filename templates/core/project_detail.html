@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }} - ProjectHub{% endblock %}
+
+{% block content %}
+<a href="{% url 'project-list-page' %}" class="text-xs text-sky-700 hover:underline">&larr; Back to projects</a>
+
+<section class="mt-4 grid md:grid-cols-3 gap-6">
+  <div class="md:col-span-2 space-y-4">
+    <h1 class="text-2xl font-semibold text-slate-900">{{ project.title }}</h1>
+    <p class="text-sm text-slate-600">
+      {{ project.department }} • {{ project.course }} • {{ project.institution }} • {{ project.year }}
+    </p>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <h2 class="text-sm font-semibold text-slate-800 mb-2">Abstract</h2>
+      <p class="text-sm text-slate-700 whitespace-pre-line">{{ project.abstract }}</p>
+    </div>
+  </div>
+
+  <aside class="space-y-4">
+    <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+      <div>
+        <p class="text-sm text-slate-500 mb-1">Price</p>
+        <p class="text-xl font-semibold text-sky-700">₦{{ project.price }}</p>
+      </div>
+      <div class="text-xs text-slate-600 flex items-center justify-between">
+        <span>Format: {{ project.file_format|default:"PDF" }} {% if project.page_count %}({{ project.page_count }}
+          pages){% endif %}</span>
+      </div>
+
+      <button id="purchaseButton" data-project-id="{{ project.id }}"
+        class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700">
+        Purchase & Download
+      </button>
+      <p class="text-xs text-slate-500">
+        Secure payment via Paystack. Instant access after verification.
+      </p>
+    </div>
+  </aside>
+</section>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  const purchaseButton = document.getElementById('purchaseButton');
+  const ratingForm = document.getElementById('ratingForm');
+  const ratingMessage = document.getElementById('ratingMessage');
+
+  purchaseButton?.addEventListener('click', async function () {
+    const projectId = this.dataset.projectId;
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/payments/init/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ project_id: Number(projectId) }),
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        alert(data.detail || 'Unable to start payment.');
+        return;
+      }
+
+      // Redirect to Paystack authorization URL
+      window.location.href = data.authorization_url;
+    } catch (err) {
+      alert('Network error while initializing payment.');
+    }
+  });
+
+
+</script>
+{% endblock %}

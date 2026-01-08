@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}Payment Confirmation - ProjectHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12 max-w-2xl">
+  <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-sky-100 flex items-center justify-center">
+        <svg class="animate-spin h-8 w-8 text-sky-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 mb-2">Verifying Payment</h2>
+      <p class="text-slate-600">Please wait while we confirm your transaction...</p>
+    </div>
+
+    <!-- Success State -->
+    <div id="successState" class="text-center hidden">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 mb-2">Payment Confirmed!</h2>
+      <p class="text-slate-600 mb-6">Your payment was successful. You can now download your project.</p>
+      
+      <button id="downloadButton" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-sky-600 to-emerald-600 text-white font-semibold hover:from-sky-700 hover:to-emerald-700 transition-all duration-200 shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+        </svg>
+        Download Project
+      </button>
+      
+      <div class="mt-6">
+        <a href="/dashboard/" class="text-sm text-sky-600 hover:text-sky-700 underline">Go to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="text-center hidden">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 mb-2">Payment Verification Failed</h2>
+      <p id="errorMessage" class="text-slate-600 mb-6">We couldn't verify your payment. Please contact support if you were charged.</p>
+      
+      <a href="/" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-slate-900 text-white font-semibold hover:bg-slate-700 transition-colors">
+        Return to Homepage
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  (async function () {
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get('reference');
+    const projectId = params.get('project_id');
+    
+    const loadingState = document.getElementById('loadingState');
+    const successState = document.getElementById('successState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+    const downloadButton = document.getElementById('downloadButton');
+    
+    let downloadUrl = null;
+
+    if (!reference) {
+      loadingState.classList.add('hidden');
+      errorState.classList.remove('hidden');
+      errorMessage.textContent = 'Missing payment reference. Please try purchasing again.';
+      return;
+    }
+
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+      return;
+    }
+
+    try {
+      // 1) Verify payment
+      const verifyResp = await fetch('/api/payments/verify/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ reference }),
+      });
+      const verifyData = await verifyResp.json();
+      
+      if (!verifyResp.ok || verifyData.status !== 'PAID') {
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        errorMessage.textContent = verifyData.detail || 'Payment verification failed. Please contact support if you were charged.';
+        return;
+      }
+
+      // Get project ID from verified purchase
+      const purchaseProjectId = verifyData.project || projectId;
+
+      // 2) Request download link
+      const dlResp = await fetch('/api/downloads/request/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ project_id: Number(purchaseProjectId), download_type: 'document' }),
+      });
+      const dlData = await dlResp.json();
+      
+      if (!dlResp.ok) {
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        errorMessage.textContent = dlData.detail || 'Could not prepare your download.';
+        return;
+      }
+
+      // Success!
+      downloadUrl = dlData.download_url;
+      loadingState.classList.add('hidden');
+      successState.classList.remove('hidden');
+
+      // Set up download button
+      downloadButton.addEventListener('click', function() {
+        window.location.href = downloadUrl;
+      });
+
+    } catch (err) {
+      console.error(err);
+      loadingState.classList.add('hidden');
+      errorState.classList.remove('hidden');
+      errorMessage.textContent = 'Network error while confirming payment. Please refresh this page.';
+    }
+  })();
+</script>
+{% endblock %}

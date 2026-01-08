@@ -1,0 +1,67 @@
+# projects/admin.py
+from django.contrib import admin
+from .models import Department, Category, ProjectMaterial, Purchase, Download
+
+
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'code', 'faculty', 'is_active']
+    list_filter = ['is_active', 'faculty']
+    search_fields = ['name', 'code', 'faculty']
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'icon', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'description']
+
+
+@admin.register(ProjectMaterial)
+class ProjectMaterialAdmin(admin.ModelAdmin):
+    list_display = ['title', 'department', 'status', 'price', 'download_count', 'created_at']
+    list_filter = ['status', 'department', 'category', 'project_type', 'year']
+    search_fields = ['title', 'abstract', 'description', 'keywords']
+    readonly_fields = ['download_count', 'view_count', 'slug', 'created_at', 'updated_at']
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'slug', 'abstract', 'description')
+        }),
+        ('Academic Information', {
+            'fields': ('department', 'category', 'institution', 'course', 'year')
+        }),
+        ('Technical Details', {
+            'fields': ('project_type', 'programming_language', 'framework', 'database', 'keywords')
+        }),
+        ('Files', {
+            'fields': ('document_file', 'software_file', 'preview_images')
+        }),
+        ('Pricing and Status', {
+            'fields': ('price', 'status', 'is_featured')
+        }),
+        ('Metrics', {
+            'fields': ('download_count', 'view_count')
+        }),
+        ('Metadata', {
+            'fields': ('created_by', 'approved_by', 'approved_at', 'created_at', 'updated_at')
+        }),
+    )
+
+
+@admin.register(Purchase)
+class PurchaseAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'project', 'amount', 'status', 'paid_at', 'created_at']
+    list_filter = ['status', 'currency']
+    search_fields = ['user__email', 'project__title', 'paystack_reference']
+    readonly_fields = ['created_at', 'updated_at']
+
+
+
+
+
+@admin.register(Download)
+class DownloadAdmin(admin.ModelAdmin):
+    list_display = ['user', 'project', 'download_type', 'downloaded_at']
+    list_filter = ['download_type']
+    search_fields = ['user__email', 'project__title', 'token']
+    readonly_fields = ['downloaded_at']
