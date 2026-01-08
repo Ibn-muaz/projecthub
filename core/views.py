@@ -34,7 +34,7 @@ def project_list(request):
     if q:
         qs = qs.filter(title__icontains=q)
     if department:
-        qs = qs.filter(department__iexact=department)
+        qs = qs.filter(department__name__iexact=department)
     if course:
         qs = qs.filter(course__iexact=course)
     if institution:
