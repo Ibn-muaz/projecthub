@@ -2,6 +2,9 @@
 # exit on error
 set -o errexit
 
+# Install setuptools first (required for drf-yasg on Python 3.12+)
+pip install --upgrade pip setuptools
+
 # Install dependencies
 pip install -r backend/requirements.txt
 
