@@ -19,6 +19,9 @@ python-dotenv==1.0.1
 # PDF processing
 pypdf==5.1.0
 
+# Image processing (for ImageField)
+Pillow>=10.0.0
+
 # HTTP requests (for Paystack)
 requests==2.31.0
 
