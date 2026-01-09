@@ -16,22 +16,9 @@ def landing_page(request):
     featured_projects = ProjectMaterial.objects.filter(
         status=ProjectMaterial.Status.APPROVED
     ).order_by('-download_count')[:6]
-    
-    # Group departments by faculty from DB
-    from projects.models import Department
-    
-    # specialized logic to grouping active departments by faculty
-    departments = Department.objects.filter(is_active=True).order_by('faculty', 'name')
-    faculty_map = {}
-    for dept in departments:
-        fac = dept.faculty or "Other"
-        if fac not in faculty_map:
-            faculty_map[fac] = []
-        faculty_map[fac].append(dept.name)
-        
     return render(request, 'core/landing.html', {
         'featured_projects': featured_projects,
-        'faculty_departments': faculty_map,
+        'faculty_departments': FACULTY_DEPARTMENTS,
     })
 
 
@@ -187,12 +174,8 @@ def payment_confirm(request):
 
 
 def topic_generator_page(request):
-    from projects.models import Department
-    # Fetch all active departments from DB
-    departments = Department.objects.filter(is_active=True).values_list('name', flat=True).order_by('name')
-    
     return render(request, 'core/topic_generator.html', {
-        'departments': departments,
+        'departments': NSUK_DEPARTMENTS,
     })
 
 
