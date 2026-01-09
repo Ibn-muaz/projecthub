@@ -41,7 +41,8 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="{% url 'admin-projects-page' %}?status=pending" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">
+          <a href="{% url 'admin-projects-page' %}?status=pending"
+            class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">
             Review Now →
           </a>
         </div>
@@ -58,7 +59,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="{% url 'admin-stats-overview' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">
+          <a href="/admin/" class="text-sm text-green-600 hover:text-green-800 font-medium">
             View Stats →
           </a>
         </div>
@@ -75,7 +76,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="{% url 'me-downloads' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">
+          <a href="/admin/projects/download/" class="text-sm text-purple-600 hover:text-purple-800 font-medium">
             View Downloads →
           </a>
         </div>
@@ -89,33 +90,37 @@
         <div class="bg-white rounded-xl shadow-md p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div class="grid grid-cols-2 gap-4">
-            <a href="{% url 'admin-projects-create' %}" 
-               class="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 group">
-              <div class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center mb-3 transition-colors duration-200">
+            <a href="{% url 'admin-projects-create' %}"
+              class="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center mb-3 transition-colors duration-200">
                 <i class="fas fa-plus text-blue-600"></i>
               </div>
               <span class="font-medium text-gray-900">Add Project</span>
             </a>
 
             <a href="{% url 'admin-projects-page' %}"
-               class="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200 group">
-              <div class="w-10 h-10 rounded-full bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-3 transition-colors duration-200">
+              class="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-3 transition-colors duration-200">
                 <i class="fas fa-edit text-green-600"></i>
               </div>
               <span class="font-medium text-gray-900">Manage Projects</span>
             </a>
 
             <a href="/admin/projects/department/"
-               class="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200 group">
-              <div class="w-10 h-10 rounded-full bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center mb-3 transition-colors duration-200">
+              class="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center mb-3 transition-colors duration-200">
                 <i class="fas fa-building text-purple-600"></i>
               </div>
               <span class="font-medium text-gray-900">Departments</span>
             </a>
 
             <a href="/admin/projects/category/"
-               class="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors duration-200 group">
-              <div class="w-10 h-10 rounded-full bg-yellow-100 group-hover:bg-yellow-200 flex items-center justify-center mb-3 transition-colors duration-200">
+              class="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors duration-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-yellow-100 group-hover:bg-yellow-200 flex items-center justify-center mb-3 transition-colors duration-200">
                 <i class="fas fa-tags text-yellow-600"></i>
               </div>
               <span class="font-medium text-gray-900">Categories</span>
@@ -154,34 +159,37 @@
           </span>
           {% endif %}
         </div>
-        
+
         {% if pending_projects_list %}
         <div class="space-y-4">
           {% for project in pending_projects_list %}
-          <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all duration-200">
+          <div
+            class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all duration-200">
             <div class="flex items-start justify-between">
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-gray-900 truncate">{{ project.title }}</h3>
                 <div class="flex items-center gap-2 mt-1">
-                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">{{ project.department.name }}</span>
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">{{ project.department.name
+                    }}</span>
                   <span class="text-xs text-gray-500">{{ project.year }}</span>
-                  <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{{ project.get_project_type_display }}</span>
+                  <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{{
+                    project.get_project_type_display }}</span>
                 </div>
               </div>
               <div class="flex items-center gap-2 ml-4">
-                <a href="{% url 'admin-projects-edit' pk=project.id %}" 
-                   class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200">
+                <a href="{% url 'admin-projects-edit' pk=project.id %}"
+                  class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200">
                   Review
                 </a>
               </div>
             </div>
           </div>
           {% endfor %}
-          
+
           {% if pending_projects > 5 %}
           <div class="text-center pt-2">
-            <a href="{% url 'admin-projects-page' %}?status=pending" 
-               class="text-sm font-medium text-blue-600 hover:text-blue-800">
+            <a href="{% url 'admin-projects-page' %}?status=pending"
+              class="text-sm font-medium text-blue-600 hover:text-blue-800">
               View all {{ pending_projects }} pending projects →
             </a>
           </div>

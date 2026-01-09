@@ -79,9 +79,47 @@ def student_dashboard(request):
     return render(request, 'core/student_dashboard.html')
 
 
+@login_required
 def admin_dashboard(request):
-    # Stats are loaded via JS from /api/admin/stats/overview/
-    return render(request, 'core/admin_dashboard.html')
+    """Admin dashboard with stats and pending projects"""
+    if not _require_admin(request):
+        return HttpResponseForbidden("Not allowed")
+    
+    from projects.models import ProjectMaterial, Purchase, Download, Department
+    from django.db.models import Sum
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # Get stats
+    total_projects = ProjectMaterial.objects.count()
+    pending_projects = ProjectMaterial.objects.filter(status=ProjectMaterial.Status.PENDING).count()
+    pending_projects_list = ProjectMaterial.objects.filter(status=ProjectMaterial.Status.PENDING).order_by('-created_at')[:5]
+    
+    # Revenue from paid purchases
+    total_revenue = Purchase.objects.filter(status=Purchase.Status.PAID).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    # Downloads today
+    today = timezone.now().date()
+    downloads_today = Download.objects.filter(downloaded_at__date=today).count()
+    
+    # Active users (users who logged in within last 30 days)
+    from accounts.models import User
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    active_users = User.objects.filter(last_login__gte=thirty_days_ago).count()
+    
+    # Storage (placeholder)
+    storage_used = 0.5  # GB placeholder
+    
+    return render(request, 'core/admin_dashboard.html', {
+        'total_projects': total_projects,
+        'pending_projects': pending_projects,
+        'pending_projects_list': pending_projects_list,
+        'total_revenue': total_revenue,
+        'downloads_today': downloads_today,
+        'active_users': active_users,
+        'storage_used': storage_used,
+        'recent_activity': [],  # Placeholder for activity feed
+    })
 
 
 def _require_admin(request):
