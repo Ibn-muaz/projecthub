@@ -397,78 +397,39 @@ class DownloadFileView(APIView):
 
 
 class TopicGeneratorView(APIView):
-    """Generate project topic suggestions based on department and keywords"""
+    """Generate project topic suggestions based on department"""
     permission_classes = [permissions.AllowAny]
     
-    # Predefined topic templates per department
-    TOPIC_TEMPLATES = {
-        'Computer Science': [
-            "Development of a {keyword} Management System",
-            "Design and Implementation of a {keyword} Application",
-            "A Web-Based {keyword} Platform for Educational Institutions",
-            "Machine Learning Approach to {keyword} Prediction",
-            "Mobile Application for {keyword} Services",
-            "Blockchain-Based {keyword} System",
-            "Artificial Intelligence in {keyword} Analysis",
-            "Cloud Computing Solution for {keyword}",
-        ],
-        'Accounting': [
-            "Impact of {keyword} on Financial Performance",
-            "Analysis of {keyword} in Nigerian Banking Sector",
-            "Effect of {keyword} on Tax Compliance",
-            "Forensic Accounting and {keyword} Detection",
-            "Computerized Accounting System for {keyword}",
-            "Internal Control Systems and {keyword}",
-        ],
-        'Business Administration': [
-            "Effect of {keyword} on Organizational Performance",
-            "Impact of {keyword} on Employee Productivity",
-            "Strategic Management Practices in {keyword}",
-            "Entrepreneurship and {keyword} Development",
-            "Human Resource Management and {keyword}",
-        ],
-        'Economics': [
-            "Economic Impact of {keyword} in Nigeria",
-            "Analysis of {keyword} on National Development",
-            "Inflation and {keyword}: An Empirical Study",
-            "Foreign Direct Investment and {keyword}",
-            "Monetary Policy and {keyword}",
-        ],
-        'default': [
-            "Analysis of {keyword} in Contemporary Society",
-            "Impact of {keyword} on Development",
-            "A Study of {keyword} in Nigeria",
-            "Evaluation of {keyword} Systems",
-            "Assessment of {keyword} Practices",
-        ]
-    }
-    
     def post(self, request):
+        import random
+        from .topic_data import DEPARTMENT_TOPICS, DEFAULT_TOPICS
+        
         department = request.data.get('department', '')
         keywords = request.data.get('keywords', '')
         
         if not department:
             return Response({'detail': 'Department is required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Get templates for department or use default
-        templates = self.TOPIC_TEMPLATES.get(department, self.TOPIC_TEMPLATES['default'])
+        # Get topics for the department
+        topics = DEPARTMENT_TOPICS.get(department, [])
         
-        # If no keywords provided, use generic ones
-        keyword_list = [k.strip() for k in keywords.split(',') if k.strip()] if keywords else [
-            'Information Technology',
-            'Digital Innovation',
-            'Modern Systems',
-            'Data Management',
-        ]
+        # If no specific topics for this department, use default
+        if not topics:
+            topics = DEFAULT_TOPICS
         
-        topics = []
-        for template in templates:
-            for keyword in keyword_list[:2]:  # Limit to 2 keywords per template
-                topic = template.format(keyword=keyword)
-                if topic not in topics:
-                    topics.append(topic)
+        # Filter by keywords if provided
+        if keywords:
+            keyword_list = [k.strip().lower() for k in keywords.split(',') if k.strip()]
+            filtered_topics = [
+                t for t in topics 
+                if any(kw in t.lower() for kw in keyword_list)
+            ]
+            # If filtering produced results, use them; otherwise keep original list
+            if filtered_topics:
+                topics = filtered_topics
         
-        # Limit to 8 topics
-        topics = topics[:8]
+        # Random sample of 2 topics (or fewer if not enough available)
+        num_topics = min(2, len(topics))
+        selected_topics = random.sample(topics, num_topics)
         
-        return Response({'topics': topics})
+        return Response({'topics': selected_topics})
