@@ -16,9 +16,22 @@ def landing_page(request):
     featured_projects = ProjectMaterial.objects.filter(
         status=ProjectMaterial.Status.APPROVED
     ).order_by('-download_count')[:6]
+    
+    # Group departments by faculty from DB
+    from projects.models import Department
+    
+    # specialized logic to grouping active departments by faculty
+    departments = Department.objects.filter(is_active=True).order_by('faculty', 'name')
+    faculty_map = {}
+    for dept in departments:
+        fac = dept.faculty or "Other"
+        if fac not in faculty_map:
+            faculty_map[fac] = []
+        faculty_map[fac].append(dept.name)
+        
     return render(request, 'core/landing.html', {
         'featured_projects': featured_projects,
-        'faculty_departments': FACULTY_DEPARTMENTS,
+        'faculty_departments': faculty_map,
     })
 
 
@@ -136,8 +149,12 @@ def payment_confirm(request):
 
 
 def topic_generator_page(request):
+    from projects.models import Department
+    # Fetch all active departments from DB
+    departments = Department.objects.filter(is_active=True).values_list('name', flat=True).order_by('name')
+    
     return render(request, 'core/topic_generator.html', {
-        'departments': NSUK_DEPARTMENTS,
+        'departments': departments,
     })
 
 
@@ -167,13 +184,8 @@ def login_page(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         
-        # Find user by email and authenticate
-        from accounts.models import User
-        try:
-            user_obj = User.objects.get(email=email)
-            user = authenticate(request, username=user_obj.username, password=password)
-        except User.DoesNotExist:
-            user = None
+        # Authenticate using the custom backend (email or username)
+        user = authenticate(request, username=email, password=password)
         
         if user is not None:
             login(request, user)

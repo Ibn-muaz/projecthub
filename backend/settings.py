@@ -205,6 +205,11 @@ CSRF_COOKIE_SECURE = not DEBUG  # True in production
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
 
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # Django REST Framework configuration
 REST_FRAMEWORK = {
