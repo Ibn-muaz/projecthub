@@ -12,20 +12,21 @@
     <div>
       <label class="block text-xs font-medium text-slate-600 mb-1">Department</label>
       <select name="department" id="departmentSelect" required
-              class="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+        class="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
         <option value="" disabled selected>Select your department</option>
         {% for dept in departments %}
-          <option value="{{ dept }}">{{ dept }}</option>
+        <option value="{{ dept }}">{{ dept }}</option>
         {% endfor %}
       </select>
     </div>
     <div>
-      <label class="block text-xs font-medium text-slate-600 mb-1">Optional Keywords (e.g. e-learning, climate change)</label>
+      <label class="block text-xs font-medium text-slate-600 mb-1">Optional Keywords (e.g. e-learning, climate
+        change)</label>
       <input type="text" name="keywords" id="keywordsInput"
-             class="w-full rounded-md border border-slate-300 px-3 py-2" />
+        class="w-full rounded-md border border-slate-300 px-3 py-2" />
     </div>
     <button type="submit"
-            class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700">
+      class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700">
       Generate Topics
     </button>
   </form>
@@ -71,7 +72,7 @@
     }
 
     try {
-      const resp = await fetch('/api/tools/topic-generator/', {
+      const resp = await fetch('/api/projects/tools/topic-generator/', {
         method: 'POST',
         headers,
         body: JSON.stringify({ department, keywords }),
