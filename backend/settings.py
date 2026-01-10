@@ -254,7 +254,7 @@ if DEBUG:
 
 
 # Security settings – these should be True/strict in production
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # Must be False for JavaScript to read CSRF token
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 # Paystack configuration (set these via environment variables in production)
