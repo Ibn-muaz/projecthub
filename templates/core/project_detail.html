@@ -46,41 +46,75 @@
 {{ block.super }}
 <script>
   const purchaseButton = document.getElementById('purchaseButton');
-  const ratingForm = document.getElementById('ratingForm');
-  const ratingMessage = document.getElementById('ratingMessage');
 
   purchaseButton?.addEventListener('click', async function () {
     const projectId = this.dataset.projectId;
-    const accessToken = localStorage.getItem('accessToken');
 
-    if (!accessToken) {
+    // Check if user is logged in (session-based)
+    {% if user.is_authenticated %}
+    const isLoggedIn = true;
+    {% else %}
+    const isLoggedIn = false;
+    {% endif %}
+
+    if (!isLoggedIn) {
       window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
       return;
     }
 
+    // Get CSRF token from cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
     try {
-      const resp = await fetch('/api/payments/init/', {
+      purchaseButton.disabled = true;
+      purchaseButton.textContent = 'Processing...';
+
+      const resp = await fetch('/api/projects/payments/init/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken,
+          'X-CSRFToken': csrftoken,
         },
+        credentials: 'include',
         body: JSON.stringify({ project_id: Number(projectId) }),
       });
 
       const data = await resp.json();
       if (!resp.ok) {
         alert(data.detail || 'Unable to start payment.');
+        purchaseButton.disabled = false;
+        purchaseButton.textContent = 'Purchase & Download';
         return;
       }
 
       // Redirect to Paystack authorization URL
-      window.location.href = data.authorization_url;
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url;
+      } else if (data.id) {
+        // Free project - already purchased
+        alert('Project purchased successfully! You can now download it.');
+        window.location.reload();
+      }
     } catch (err) {
+      console.error(err);
       alert('Network error while initializing payment.');
+      purchaseButton.disabled = false;
+      purchaseButton.textContent = 'Purchase & Download';
     }
   });
-
-
 </script>
 {% endblock %}
