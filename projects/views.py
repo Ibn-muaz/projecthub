@@ -94,7 +94,6 @@ class ProjectMaterialViewSet(viewsets.ModelViewSet):
     
 
 
-
 # =============== PAYMENT VIEWS ===============
 class PaymentInitView(APIView):
     permission_classes = [permissions.IsAuthenticated]

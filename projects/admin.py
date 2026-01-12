@@ -1,6 +1,8 @@
 # projects/admin.py
 from django.contrib import admin
+from django.utils import timezone
 from .models import Department, Category, ProjectMaterial, Purchase, Download
+from .forms import ProjectMaterialAdminForm
 
 
 @admin.register(Department)
@@ -19,6 +21,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectMaterial)
 class ProjectMaterialAdmin(admin.ModelAdmin):
+    form = ProjectMaterialAdminForm
     list_display = ['title', 'department', 'status', 'price', 'download_count', 'created_at']
     list_filter = ['status', 'department', 'category', 'project_type', 'year']
     search_fields = ['title', 'abstract', 'description', 'keywords']
@@ -46,6 +49,15 @@ class ProjectMaterialAdmin(admin.ModelAdmin):
             'fields': ('created_by', 'approved_by', 'approved_at', 'created_at', 'updated_at')
         }),
     )
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # If creating a new project (not editing)
+            obj.status = ProjectMaterial.Status.APPROVED
+            obj.approved_by = request.user
+            obj.approved_at = timezone.now()
+            if not obj.created_by:  # If created_by is not set
+                obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Purchase)
@@ -54,9 +66,6 @@ class PurchaseAdmin(admin.ModelAdmin):
     list_filter = ['status', 'currency']
     search_fields = ['user__email', 'project__title', 'paystack_reference']
     readonly_fields = ['created_at', 'updated_at']
-
-
-
 
 
 @admin.register(Download)
