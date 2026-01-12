@@ -1,22 +1,37 @@
-# accounts/urls.py
-from django.urls import path
-from django.contrib.auth import views as auth_views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from . import views
+# In accounts/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib import messages
 
-urlpatterns = [
-    # API URLs (JWT Authentication)
-    path('register/', views.RegisterView.as_view(), name='auth-register'),
-    path('login/', TokenObtainPairView.as_view(), name='auth-login'),
-    path('refresh/', TokenRefreshView.as_view(), name='auth-refresh'),
-    path('logout/', views.LogoutView.as_view(), name='auth-logout'),
-    path('me/', views.MeView.as_view(), name='auth-me'),
-    # Comment out if EmailVerificationToken doesn't exist
-    # path('verify-email/', views.VerifyEmailView.as_view(), name='auth-verify-email'),
+def web_register_view(request):
+    """Handle web registration (session-based)"""
+    if request.user.is_authenticated:
+        return redirect('landing')
     
-    # Web URLs (Session Authentication - for web pages)
-    path('web/login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='web-login'),
-    path('web/logout/', auth_views.LogoutView.as_view(next_page='/'), name='web-logout'),
-    path('web/register/', views.web_register_view, name='web-register'),
-    path('web/profile/', views.web_profile_view, name='web-profile'),
-]
+    if request.method == 'POST':
+        from .forms import UserRegistrationForm
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            
+            # FIX: Set the backend attribute
+            user.backend = 'accounts.backends.EmailBackend'
+            
+            # Log the user in
+            login(request, user)
+            messages.success(request, 'Account created successfully!')
+            return redirect('landing')
+        else:
+            return render(request, 'core/register.html', {'form': form})
+    else:
+        from .forms import UserRegistrationForm
+        form = UserRegistrationForm()
+    
+    return render(request, 'core/register.html', {'form': form})
+
+
+def web_profile_view(request):
+    """Web profile page"""
+    if not request.user.is_authenticated:
+        return redirect('web-login')
+    return render(request, 'accounts/profile.html', {'user': request.user})

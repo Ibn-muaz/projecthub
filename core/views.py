@@ -1,10 +1,10 @@
+# core/views.py (complete fixed version)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from django.conf import settings
 
 from accounts.forms import UserRegistrationForm
 
@@ -196,7 +196,6 @@ def contact_page(request):
     return render(request, 'core/contact.html')
 
 
-# ADD THESE TWO FUNCTIONS - THEY WERE MISSING
 def login_page(request):
     """Handle user login with email"""
     if request.user.is_authenticated:
@@ -229,9 +228,8 @@ def register_page(request):
         if form.is_valid():
             user = form.save()
             
-            # FIX: Set the backend attribute before logging in
-            # Use the first backend from settings
-            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            # FIX: Set the backend attribute to EmailBackend before logging in
+            user.backend = 'accounts.backends.EmailBackend'
             
             # Now log the user in
             login(request, user)
