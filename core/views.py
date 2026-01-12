@@ -4,6 +4,7 @@ from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+from django.conf import settings
 
 from accounts.forms import UserRegistrationForm
 
@@ -227,7 +228,12 @@ def register_page(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Auto-login after registration
+            
+            # FIX: Set the backend attribute before logging in
+            # Use the first backend from settings
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            
+            # Now log the user in
             login(request, user)
             messages.success(request, 'Account created successfully!')
             return redirect('landing')
