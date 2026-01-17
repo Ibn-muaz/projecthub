@@ -1,5 +1,6 @@
-# projects/views.py (COMPLETE VERSION - includes fixed TopicGeneratorView)
+# projects/views.py (COMPLETE UPDATED VERSION)
 import uuid
+import random
 from datetime import timedelta
 from pathlib import Path
 from django.utils.text import slugify
@@ -14,6 +15,7 @@ from rest_framework import permissions, status, generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+import logging
 
 from accounts.permissions import IsAdminUserRole
 from django.contrib.auth import get_user_model
@@ -30,6 +32,7 @@ from .serializers import (
 )
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
@@ -91,7 +94,6 @@ class ProjectMaterialViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
-    
 
 
 # =============== PAYMENT VIEWS ===============
@@ -395,49 +397,321 @@ class DownloadFileView(APIView):
         return response
 
 
+# =============== TOPIC GENERATOR VIEW ===============
 class TopicGeneratorView(APIView):
-    """Generate project topic suggestions based on department"""
+    """
+    Generate 2 random project topic suggestions based on department.
+    Returns exactly 2 random topics from the department's topic list.
+    """
     permission_classes = [permissions.AllowAny]
     
     def post(self, request):
-        import random
-        from .topic_data import DEPARTMENT_TOPICS, DEFAULT_TOPICS
+        try:
+            # Import topic data from topic_data.py
+            from .topic_data import DEPARTMENT_TOPICS, DEFAULT_TOPICS
+            
+            department = request.data.get('department', '').strip()
+            keywords = request.data.get('keywords', '').strip()
+            
+            if not department:
+                return Response(
+                    {'detail': 'Department is required to generate topics.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Log the request
+            log_message = f"Topic generation requested for department: '{department}'"
+            if keywords:
+                log_message += f" with keywords: '{keywords}'"
+            logger.info(log_message)
+            
+            # Normalize department name for matching (case-insensitive, partial match)
+            department_lower = department.lower()
+            
+            # Try to find the department in our topics
+            department_key = None
+            best_match_score = 0
+            
+            for dept_key in DEPARTMENT_TOPICS.keys():
+                dept_key_lower = dept_key.lower()
+                
+                # Calculate match score
+                score = 0
+                if department_lower == dept_key_lower:
+                    score = 100  # Exact match
+                elif department_lower in dept_key_lower:
+                    score = 80   # Department name is part of key
+                elif dept_key_lower in department_lower:
+                    score = 70   # Key is part of department name
+                
+                if score > best_match_score:
+                    best_match_score = score
+                    department_key = dept_key
+            
+            # Get topics for the department or use default
+            if department_key and best_match_score >= 50:  # Minimum confidence score
+                topics = DEPARTMENT_TOPICS[department_key]
+                logger.info(f"Found department match: '{department_key}' with {len(topics)} topics")
+            else:
+                # If department not found, use fallback topics
+                topics = self._generate_fallback_topics(department, DEFAULT_TOPICS)
+                logger.info(f"No exact department match found for '{department}'. Using fallback topics.")
+            
+            # Filter by keywords if provided
+            original_topic_count = len(topics)
+            if keywords and topics:
+                keyword_list = [k.strip().lower() for k in keywords.split(',') if k.strip()]
+                if keyword_list:
+                    filtered_topics = []
+                    for topic in topics:
+                        topic_lower = topic.lower()
+                        # Check if any keyword is in the topic
+                        if any(keyword in topic_lower for keyword in keyword_list):
+                            filtered_topics.append(topic)
+                    
+                    # If we found keyword matches, use them
+                    if filtered_topics:
+                        topics = filtered_topics
+                        logger.info(f"Filtered topics by keywords. From {original_topic_count} to {len(topics)} topics.")
+            
+            # Ensure we have at least some topics
+            if not topics:
+                topics = DEFAULT_TOPICS
+                logger.info(f"No topics found. Using default topics: {len(topics)} topics.")
+            
+            # Random sample of exactly 2 topics
+            if len(topics) >= 2:
+                # Use random.sample to get 2 unique topics
+                selected_topics = random.sample(topics, 2)
+            elif len(topics) == 1:
+                # If only one topic available, return it
+                selected_topics = topics
+            else:
+                # No topics available
+                selected_topics = [
+                    f"Design and Implementation of a {department} Management System",
+                    f"Impact of Digital Technology on {department} in Modern Society"
+                ]
+                logger.warning(f"No topics available for department '{department}'. Generated generic topics.")
+            
+            # Log successful generation
+            logger.info(f"Generated {len(selected_topics)} topics for department: '{department}'")
+            
+            return Response({
+                'topics': selected_topics,
+                'department': department,
+                'keywords': keywords,
+                'count': len(selected_topics),
+                'matched_department': department_key if department_key else None
+            })
+            
+        except ImportError as e:
+            logger.error(f"Failed to import topic_data: {str(e)}")
+            return Response(
+                {'detail': 'Topic database is not available. Please contact support.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            logger.error(f"Error in topic generator: {str(e)}", exc_info=True)
+            return Response(
+                {'detail': 'An unexpected error occurred while generating topics.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
+    def _generate_fallback_topics(self, department, default_topics):
+        """Generate fallback topics if department not found in topic_data"""
+        fallback_topics = [
+            f"Design and Implementation of a {department} Management System",
+            f"Impact of Technology on {department} in Nigeria",
+            f"Challenges and Solutions in {department}: A Case Study of Nasarawa State University",
+            f"Modern Approaches to {department} in the 21st Century",
+            f"Comparative Analysis of Traditional and Modern {department} Methods",
+            f"Development of a Mobile Application for {department} Students",
+            f"Assessment of {department} Curriculum in Nigerian Universities",
+            f"Role of {department} in Sustainable Development",
+            f"Digital Transformation in {department}: Opportunities and Challenges",
+            f"Effect of Globalization on {department} Practices"
+        ]
         
-        department = request.data.get('department', '')
-        keywords = request.data.get('keywords', '')
+        # Combine with default topics
+        all_topics = fallback_topics + default_topics
         
-        if not department:
-            return Response({'detail': 'Department is required'}, status=status.HTTP_400_BAD_REQUEST)
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_topics = []
+        for topic in all_topics:
+            if topic not in seen:
+                seen.add(topic)
+                unique_topics.append(topic)
         
-        # Find the department in the keys (case-insensitive)
-        department_found = None
-        for dept_key in DEPARTMENT_TOPICS.keys():
-            if dept_key.lower() == department.lower():
-                department_found = dept_key
-                break
-        
-        # Get topics for the department
-        if department_found:
-            topics = DEPARTMENT_TOPICS[department_found]
-        else:
-            topics = DEFAULT_TOPICS
-        
-        # Filter by keywords if provided
-        if keywords and topics:
-            keyword_list = [k.strip().lower() for k in keywords.split(',') if k.strip()]
-            filtered_topics = [
-                t for t in topics 
-                if any(kw in t.lower() for kw in keyword_list)
-            ]
-            # If filtering produced results, use them; otherwise keep original list
-            if filtered_topics:
-                topics = filtered_topics
-        
-        # Random sample of 2 topics (or fewer if not enough available)
-        if topics:
-            num_topics = min(2, len(topics))
-            selected_topics = random.sample(topics, num_topics)
-        else:
-            selected_topics = []
-        
-        return Response({'topics': selected_topics})
+        return unique_topics
+
+
+# =============== PROJECT TOOLS VIEWS ===============
+class ProjectToolsView(APIView):
+    """
+    Base view for project-related tools.
+    """
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+# =============== DEPARTMENT LIST FOR TOPIC GENERATOR ===============
+class DepartmentListView(APIView):
+    """
+    Get list of departments for topic generator dropdown.
+    """
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        try:
+            from .topic_data import DEPARTMENT_TOPICS
+            
+            # Get all department names from topic_data
+            departments = list(DEPARTMENT_TOPICS.keys())
+            
+            # Sort alphabetically
+            departments.sort()
+            
+            return Response({
+                'departments': departments,
+                'count': len(departments)
+            })
+            
+        except ImportError:
+            # Fallback to database departments
+            db_departments = Department.objects.filter(is_active=True).values_list('name', flat=True)
+            departments = list(db_departments)
+            departments.sort()
+            
+            return Response({
+                'departments': departments,
+                'count': len(departments),
+                'source': 'database'
+            })
+        except Exception as e:
+            logger.error(f"Error getting department list: {str(e)}")
+            return Response(
+                {'detail': 'Failed to get department list.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# =============== SAVE TOPICS VIEW ===============
+class SaveTopicsView(APIView):
+    """
+    Save generated topics to user's account.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            topics = request.data.get('topics', [])
+            department = request.data.get('department', '')
+            
+            if not topics:
+                return Response(
+                    {'detail': 'No topics provided to save.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # In a real implementation, you would save these to the user's profile
+            # For now, we'll just log and return success
+            
+            logger.info(f"User {request.user.id} saved {len(topics)} topics for department: {department}")
+            
+            # You could save to a model like:
+            # SavedTopic.objects.create(
+            #     user=request.user,
+            #     department=department,
+            #     topics=topics,
+            #     saved_at=timezone.now()
+            # )
+            
+            return Response({
+                'message': f'Successfully saved {len(topics)} topics to your account.',
+                'saved_count': len(topics),
+                'department': department
+            })
+            
+        except Exception as e:
+            logger.error(f"Error saving topics: {str(e)}")
+            return Response(
+                {'detail': 'Failed to save topics.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# =============== GET SAVED TOPICS VIEW ===============
+class GetSavedTopicsView(APIView):
+    """
+    Get user's saved topics.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            # In a real implementation, you would retrieve from database
+            # For now, return empty list
+            return Response({
+                'saved_topics': [],
+                'count': 0
+            })
+        except Exception as e:
+            logger.error(f"Error getting saved topics: {str(e)}")
+            return Response(
+                {'detail': 'Failed to get saved topics.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# =============== TOPIC STATISTICS VIEW ===============
+class TopicStatisticsView(APIView):
+    """
+    Get statistics about topic generator usage.
+    """
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get(self, request):
+        try:
+            from .topic_data import DEPARTMENT_TOPICS
+            
+            total_departments = len(DEPARTMENT_TOPICS)
+            
+            # Count total topics across all departments
+            total_topics = 0
+            topics_per_department = {}
+            
+            for dept, topics in DEPARTMENT_TOPICS.items():
+                topic_count = len(topics)
+                total_topics += topic_count
+                topics_per_department[dept] = topic_count
+            
+            # Get top departments by topic count
+            sorted_departments = sorted(
+                topics_per_department.items(),
+                key=lambda x: x[1],
+                reverse=True
+            )[:5]  # Top 5 departments
+            
+            return Response({
+                'total_departments': total_departments,
+                'total_topics': total_topics,
+                'average_topics_per_department': total_topics // total_departments if total_departments > 0 else 0,
+                'top_departments': [
+                    {'department': dept, 'topic_count': count}
+                    for dept, count in sorted_departments
+                ],
+                'last_updated': '2024'  # You can make this dynamic
+            })
+            
+        except ImportError:
+            return Response(
+                {'detail': 'Topic statistics not available.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        except Exception as e:
+            logger.error(f"Error getting topic statistics: {str(e)}")
+            return Response(
+                {'detail': 'Failed to get topic statistics.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

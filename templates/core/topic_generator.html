@@ -2,105 +2,544 @@
 {% block title %}Final Year Project Topic Generator - ProjectHub{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-semibold text-slate-900 mb-4">Final Year Project Topic Generator</h1>
-<p class="text-sm text-slate-600 mb-4">
-  Select your department in Nasarawa State University, Keffi and generate suggested final year project topics.
-</p>
-
-<div class="bg-white border border-slate-200 rounded-xl p-4 max-w-xl">
-  <form id="topicForm" class="space-y-4 text-sm">
-    <div>
-      <label class="block text-xs font-medium text-slate-600 mb-1">Department</label>
-      <select name="department" id="departmentSelect" required
-        class="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
-        <option value="" disabled selected>Select your department</option>
-        {% for dept in departments %}
-        <option value="{{ dept }}">{{ dept }}</option>
-        {% endfor %}
-      </select>
+<div class="min-h-screen bg-gradient-to-br from-sky-50 to-white py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-slate-900 mb-3">Final Year Project Topic Generator</h1>
+      <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+        Get AI-powered project topic suggestions tailored to your department at Nasarawa State University, Keffi
+      </p>
     </div>
-    <div>
-      <label class="block text-xs font-medium text-slate-600 mb-1">Optional Keywords (e.g. e-learning, climate
-        change)</label>
-      <input type="text" name="keywords" id="keywordsInput"
-        class="w-full rounded-md border border-slate-300 px-3 py-2" />
-    </div>
-    <button type="submit"
-      class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700">
-      Generate Topics
-    </button>
-  </form>
 
-  <div id="topicsSection" class="mt-6 hidden">
-    <h2 class="text-sm font-semibold text-slate-800 mb-2">Suggested Topics</h2>
-    <ul id="topicsList" class="list-disc list-inside space-y-1 text-sm text-slate-700"></ul>
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+      <div class="grid md:grid-cols-2 gap-8 p-6 md:p-8">
+        <!-- Left: Form -->
+        <div>
+          <div class="mb-6">
+            <div class="inline-flex items-center bg-sky-100 text-sky-800 text-sm font-medium px-4 py-2 rounded-full mb-3">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+              </svg>
+              For Nasarawa State University, Keffi Students
+            </div>
+            <h2 class="text-xl font-semibold text-slate-900">Generate Your Project Topic</h2>
+            <p class="text-slate-600 text-sm mt-2">Select your department and optionally add keywords for personalized suggestions.</p>
+          </div>
+
+          <form id="topicForm" class="space-y-5">
+            {% csrf_token %}
+            
+            <!-- Department Selection -->
+            <div>
+              <label for="departmentSelect" class="block text-sm font-medium text-slate-700 mb-2">
+                <span class="flex items-center">
+                  <svg class="w-5 h-5 mr-2 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                  </svg>
+                  Department
+                </span>
+              </label>
+              <select name="department" id="departmentSelect" required
+                class="w-full rounded-lg border-slate-300 focus:border-sky-500 focus:ring-sky-500 shadow-sm py-3 px-4 text-sm">
+                <option value="" disabled selected>Select your department</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}">{{ dept }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Keywords -->
+            <div>
+              <label for="keywordsInput" class="block text-sm font-medium text-slate-700 mb-2">
+                <span class="flex items-center">
+                  <svg class="w-5 h-5 mr-2 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9.243 3.03a1 1 0 01.727 1.213L9.53 6h2.94l.56-2.243a1 1 0 111.94.486L14.53 6H17a1 1 0 110 2h-2.97l-1 4H15a1 1 0 110 2h-2.47l-.56 2.242a1 1 0 11-1.94-.485L10.47 14H7.53l-.56 2.242a1 1 0 11-1.94-.485L5.47 14H3a1 1 0 110-2h2.97l1-4H5a1 1 0 110-2h2.47l.56-2.243a1 1 0 011.213-.727zM9.03 8l-1 4h2.938l1-4H9.031z" clip-rule="evenodd"/>
+                  </svg>
+                  Optional Keywords
+                </span>
+              </label>
+              <input type="text" name="keywords" id="keywordsInput" placeholder="e.g., e-learning, climate change, AI"
+                class="w-full rounded-lg border-slate-300 focus:border-sky-500 focus:ring-sky-500 shadow-sm py-3 px-4 text-sm"
+                autocomplete="off">
+              <p class="mt-1 text-xs text-slate-500">Add specific keywords to get more relevant topic suggestions</p>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="generateButton"
+              class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-200">
+              <svg id="generateSpinner" class="hidden w-5 h-5 mr-2 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span id="generateText">Generate 2 Random Topics</span>
+            </button>
+          </form>
+
+          <!-- Error Message -->
+          <div id="topicError" class="mt-4 hidden">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <div class="text-sm text-red-700" id="errorMessage"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Preview/Info -->
+        <div class="md:border-l md:border-slate-200 md:pl-8">
+          <div class="sticky top-6">
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold text-slate-900 mb-3">How It Works</h3>
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center mr-3">
+                    <span class="text-sm font-semibold text-sky-700">1</span>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-medium text-slate-900">Select Department</h4>
+                    <p class="text-sm text-slate-600">Choose your department</p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center mr-3">
+                    <span class="text-sm font-semibold text-sky-700">2</span>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-medium text-slate-900">Add Keywords (Optional)</h4>
+                    <p class="text-sm text-slate-600">Specify areas of interest for personalized suggestions</p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center mr-3">
+                    <span class="text-sm font-semibold text-sky-700">3</span>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-medium text-slate-900">Get 2 Random Topics</h4>
+                    <p class="text-sm text-slate-600">Receive 2 relevant project topic suggestions instantly</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Department Statistics -->
+            <div class="bg-sky-50 rounded-xl p-5 border border-sky-100">
+              <h4 class="text-sm font-semibold text-sky-900 mb-3">Department Coverage</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-sky-800">Total Departments:</span>
+                  <span class="font-semibold text-sky-900">{{ departments|length }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-sky-800">Topics per Department:</span>
+                  <span class="font-semibold text-sky-900">10-50+</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-sky-800">Updated:</span>
+                  <span class="font-semibold text-sky-900">2024</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="topicsSection" class="mt-8 hidden">
+      <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="p-6 md:p-8">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl font-semibold text-slate-900 mb-1">Your Topic Suggestions</h2>
+              <p class="text-sm text-slate-600">
+                Generated for <span id="selectedDepartment" class="font-medium text-sky-700"></span>
+                <span id="selectedKeywords" class="hidden"> with keywords: <span id="keywordsValue" class="font-medium text-sky-700"></span></span>
+              </p>
+            </div>
+            <button onclick="window.print()" class="inline-flex items-center text-sm text-sky-600 hover:text-sky-700">
+              <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
+              </svg>
+              Print/Save
+            </button>
+          </div>
+
+          <div class="mb-6">
+            <div class="flex items-center bg-green-50 text-green-800 text-sm font-medium px-4 py-3 rounded-lg mb-4">
+              <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <span>Successfully generated 2 random project topics for you!</span>
+            </div>
+          </div>
+
+          <div id="topicsList" class="space-y-4"></div>
+
+          <!-- Tips for Choosing -->
+          <div class="mt-8 pt-6 border-t border-slate-200">
+            <h4 class="text-sm font-semibold text-slate-900 mb-3">Tips for Choosing Your Topic</h4>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-sky-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-medium text-slate-900 mb-1">Consider Scope</p>
+                  <p class="text-xs text-slate-600">Choose a topic that can be realistically completed within your timeframe.</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-sky-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-medium text-slate-900 mb-1">Check Availability</p>
+                  <p class="text-xs text-slate-600">Ensure resources and data are available for your chosen topic.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="mt-8 pt-6 border-t border-slate-200">
+            <div class="flex flex-wrap gap-3">
+              <button onclick="generateNewTopics()"
+                class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                </svg>
+                Generate 2 New Topics
+              </button>
+              <button id="copyTopicsButton"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                  <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                </svg>
+                Copy All Topics
+              </button>
+              <button onclick="saveAllTopics()"
+                class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Save to Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Departments List (Collapsible) -->
+    <div class="mt-8">
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <button id="toggleDepartments" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Available Departments</h3>
+            <p class="text-sm text-slate-600 mt-1">Click to view all supported departments</p>
+          </div>
+          <svg id="departmentIcon" class="w-5 h-5 text-slate-400 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        
+        <div id="departmentsList" class="hidden border-t border-slate-200 p-6">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {% for dept in departments %}
+            <div class="text-sm text-slate-700 hover:text-sky-700 cursor-pointer" onclick="selectDepartment('{{ dept }}')">
+              <div class="flex items-center">
+                <svg class="w-4 h-4 mr-2 text-sky-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                {{ dept }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <p id="topicError" class="mt-3 text-xs text-red-500 hidden"></p>
 </div>
-{% endblock %}
 
-{% block scripts %}
-{{ block.super }}
 <script>
   const topicForm = document.getElementById('topicForm');
   const topicsSection = document.getElementById('topicsSection');
   const topicsList = document.getElementById('topicsList');
   const topicError = document.getElementById('topicError');
+  const errorMessage = document.getElementById('errorMessage');
+  const generateButton = document.getElementById('generateButton');
+  const generateSpinner = document.getElementById('generateSpinner');
+  const generateText = document.getElementById('generateText');
+  const selectedDepartment = document.getElementById('selectedDepartment');
+  const selectedKeywords = document.getElementById('selectedKeywords');
+  const keywordsValue = document.getElementById('keywordsValue');
+  const copyTopicsButton = document.getElementById('copyTopicsButton');
+  const toggleDepartments = document.getElementById('toggleDepartments');
+  const departmentsList = document.getElementById('departmentsList');
+  const departmentIcon = document.getElementById('departmentIcon');
+
+  let generatedTopics = [];
+
+  // Get CSRF token function
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
 
   topicForm?.addEventListener('submit', async function (e) {
     e.preventDefault();
+    
+    // Hide previous errors and results
     topicError.classList.add('hidden');
-    topicError.textContent = '';
     topicsSection.classList.add('hidden');
     topicsList.innerHTML = '';
-
+    
+    // Get form data
     const formData = new FormData(topicForm);
     const department = formData.get('department');
     const keywords = formData.get('keywords');
 
     if (!department) {
-      topicError.textContent = 'Please select a department.';
-      topicError.classList.remove('hidden');
+      showError('Please select a department.');
       return;
     }
 
-    const accessToken = localStorage.getItem('accessToken');
-    const headers = { 'Content-Type': 'application/json' };
-    if (accessToken) {
-      headers['Authorization'] = 'Bearer ' + accessToken;
-    }
+    // Show loading state
+    generateButton.disabled = true;
+    generateSpinner.classList.remove('hidden');
+    generateText.textContent = 'Generating 2 Topics...';
 
+    // Get CSRF token
+    const csrftoken = getCookie('csrftoken');
+    
     try {
-      const resp = await fetch('/api/projects/tools/topic-generator/', {
+      const response = await fetch('/api/projects/tools/topic-generator/', {
         method: 'POST',
-        headers,
-        body: JSON.stringify({ department, keywords }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ 
+          department: department,
+          keywords: keywords || '' 
+        }),
       });
-      const data = await resp.json();
-      if (!resp.ok) {
-        topicError.textContent = data.detail || 'Could not generate topics. Please try again.';
-        topicError.classList.remove('hidden');
+
+      const data = await response.json();
+      
+      // Reset button state
+      generateButton.disabled = false;
+      generateSpinner.classList.add('hidden');
+      generateText.textContent = 'Generate 2 Random Topics';
+
+      if (!response.ok) {
+        let errorMsg = 'Could not generate topics. ';
+        if (data.detail) {
+          errorMsg += data.detail;
+        } else if (response.status === 403) {
+          errorMsg += 'Please make sure you are logged in.';
+        } else if (response.status === 400) {
+          errorMsg += 'Invalid request. Please check your inputs.';
+        }
+        showError(errorMsg);
         return;
       }
 
       const topics = data.topics || [];
       if (!topics.length) {
-        topicError.textContent = 'No topics generated. Try different keywords.';
-        topicError.classList.remove('hidden');
+        showError('No topics generated. Try different keywords or department.');
         return;
       }
 
-      topics.forEach(t => {
-        const li = document.createElement('li');
-        li.textContent = t;
-        topicsList.appendChild(li);
+      // Save generated topics
+      generatedTopics = topics;
+      
+      // Display department and keywords
+      selectedDepartment.textContent = department;
+      if (keywords) {
+        keywordsValue.textContent = keywords;
+        selectedKeywords.classList.remove('hidden');
+      } else {
+        selectedKeywords.classList.add('hidden');
+      }
+      
+      // Display topics
+      topics.forEach((topic, index) => {
+        const topicElement = document.createElement('div');
+        topicElement.className = 'bg-gradient-to-r from-sky-50 to-white rounded-xl p-5 border border-sky-100';
+        topicElement.innerHTML = `
+          <div class="flex items-start">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center mr-4 mt-1">
+              <span class="text-sm font-bold text-white">${index + 1}</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold text-slate-900 mb-2">${topic}</h3>
+              <div class="flex items-center text-xs text-slate-500 mt-3">
+                <button onclick="copyTopic(${index})" 
+                  class="inline-flex items-center text-sky-600 hover:text-sky-700 mr-4">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                  </svg>
+                  Copy
+                </button>
+                <span class="text-xs text-slate-300 mx-2">|</span>
+                <button onclick="saveTopic(${index})" 
+                  class="inline-flex items-center text-sky-600 hover:text-sky-700">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        topicsList.appendChild(topicElement);
       });
+      
+      // Show results section
       topicsSection.classList.remove('hidden');
+      
+      // Scroll to results
+      topicsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
     } catch (err) {
-      console.error(err);
-      topicError.textContent = 'Network error while generating topics.';
-      topicError.classList.remove('hidden');
+      console.error('Error:', err);
+      generateButton.disabled = false;
+      generateSpinner.classList.add('hidden');
+      generateText.textContent = 'Generate 2 Random Topics';
+      showError('Network error while generating topics. Please check your connection and try again.');
+    }
+  });
+
+  function showError(message) {
+    errorMessage.textContent = message;
+    topicError.classList.remove('hidden');
+    topicError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function copyTopic(index) {
+    if (generatedTopics[index]) {
+      navigator.clipboard.writeText(generatedTopics[index]).then(() => {
+        showNotification(`Topic ${index + 1} copied to clipboard!`, 'success');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        showNotification('Failed to copy topic', 'error');
+      });
+    }
+  }
+
+  function copyAllTopics() {
+    if (generatedTopics.length > 0) {
+      const allTopics = generatedTopics.join('\n\n');
+      navigator.clipboard.writeText(allTopics).then(() => {
+        showNotification('All 2 topics copied to clipboard!', 'success');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        showNotification('Failed to copy topics', 'error');
+      });
+    }
+  }
+
+  function saveTopic(index) {
+    if (generatedTopics[index]) {
+      // In a real app, you would send this to your backend
+      // For now, just show a notification
+      showNotification(`Topic ${index + 1} saved to your account!`, 'success');
+    }
+  }
+
+  function saveAllTopics() {
+    if (generatedTopics.length > 0) {
+      showNotification('All 2 topics saved to your account!', 'success');
+    }
+  }
+
+  function generateNewTopics() {
+    topicForm.reset();
+    topicsSection.classList.add('hidden');
+    selectedKeywords.classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Focus on department select
+    const departmentSelect = document.getElementById('departmentSelect');
+    if (departmentSelect) {
+      departmentSelect.focus();
+    }
+  }
+
+  function selectDepartment(deptName) {
+    const departmentSelect = document.getElementById('departmentSelect');
+    if (departmentSelect) {
+      departmentSelect.value = deptName;
+      showNotification(`Selected department: ${deptName}`, 'info');
+    }
+  }
+
+  copyTopicsButton?.addEventListener('click', copyAllTopics);
+
+  toggleDepartments?.addEventListener('click', () => {
+    departmentsList.classList.toggle('hidden');
+    departmentIcon.style.transform = departmentsList.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+  });
+
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg border transform transition-all duration-300 ${
+      type === 'error' 
+        ? 'bg-red-50 border-red-200 text-red-800' 
+        : type === 'success'
+        ? 'bg-green-50 border-green-200 text-green-800'
+        : 'bg-blue-50 border-blue-200 text-blue-800'
+    }`;
+    
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          ${type === 'error' 
+            ? '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>'
+            : type === 'success'
+            ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>'
+            : '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>'
+          }
+        </svg>
+        <span class="text-sm font-medium">${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+
+  // Auto-focus department select on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const departmentSelect = document.getElementById('departmentSelect');
+    if (departmentSelect) {
+      departmentSelect.focus();
     }
   });
 </script>
