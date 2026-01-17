@@ -119,7 +119,7 @@
           </div>
           <div class="p-2 max-h-[500px] overflow-y-auto custom-scrollbar">
             {% for project in featured_projects %}
-            <a href="{% url 'project-detail-page' slug=project.slug %}"
+            <a href="{% url 'project-detail' slug=project.slug %}"
               class="group flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border-b border-gray-100 last:border-b-0">
               <div class="flex-shrink-0">
                 <div

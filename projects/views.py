@@ -1,4 +1,4 @@
-# projects/views.py (COMPLETE VERSION - includes everything)
+# projects/views.py (COMPLETE VERSION - includes fixed TopicGeneratorView)
 import uuid
 from datetime import timedelta
 from pathlib import Path
@@ -409,15 +409,21 @@ class TopicGeneratorView(APIView):
         if not department:
             return Response({'detail': 'Department is required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Get topics for the department
-        topics = DEPARTMENT_TOPICS.get(department, [])
+        # Find the department in the keys (case-insensitive)
+        department_found = None
+        for dept_key in DEPARTMENT_TOPICS.keys():
+            if dept_key.lower() == department.lower():
+                department_found = dept_key
+                break
         
-        # If no specific topics for this department, use default
-        if not topics:
+        # Get topics for the department
+        if department_found:
+            topics = DEPARTMENT_TOPICS[department_found]
+        else:
             topics = DEFAULT_TOPICS
         
         # Filter by keywords if provided
-        if keywords:
+        if keywords and topics:
             keyword_list = [k.strip().lower() for k in keywords.split(',') if k.strip()]
             filtered_topics = [
                 t for t in topics 
@@ -428,7 +434,10 @@ class TopicGeneratorView(APIView):
                 topics = filtered_topics
         
         # Random sample of 2 topics (or fewer if not enough available)
-        num_topics = min(2, len(topics))
-        selected_topics = random.sample(topics, num_topics)
+        if topics:
+            num_topics = min(2, len(topics))
+            selected_topics = random.sample(topics, num_topics)
+        else:
+            selected_topics = []
         
         return Response({'topics': selected_topics})
