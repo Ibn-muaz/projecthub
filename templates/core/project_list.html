@@ -32,8 +32,11 @@
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-slate-900">Search & Filter</h2>
     <button id="toggleFilters" class="md:hidden flex items-center text-sm text-sky-600 hover:text-sky-700">
-      <svg id="filterIcon" class="w-4 h-4 mr-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
+      <svg id="filterIcon" class="w-4 h-4 mr-1 transition-transform duration-200" fill="currentColor"
+        viewBox="0 0 20 20">
+        <path fill-rule="evenodd"
+          d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+          clip-rule="evenodd" />
       </svg>
       Filters
     </button>
@@ -46,7 +49,9 @@
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
           </svg>
         </div>
         <input type="text" name="q" id="search" value="{{ request.GET.q }}"
@@ -81,17 +86,21 @@
 
     <!-- Hidden on mobile, shown on desktop -->
     <div class="md:col-span-5 flex justify-end space-x-3 pt-2">
-      <a href="{% url 'project-list-page' %}" 
+      <a href="{% url 'project-list-page' %}"
         class="inline-flex items-center px-4 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd" />
         </svg>
         Clear Filters
       </a>
       <button type="submit"
         class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+            clip-rule="evenodd" />
         </svg>
         Apply Filters
       </button>
@@ -106,7 +115,7 @@
       {% if request.GET.q %}
       <span class="inline-flex items-center bg-sky-100 text-sky-800 text-xs px-3 py-1 rounded-full">
         Search: "{{ request.GET.q }}"
-        <a href="?{{ request.GET.urlencode|remove:'&q='|remove:'q=' }}"
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'q' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}"
           class="ml-1.5 text-sky-600 hover:text-sky-800">
           &times;
         </a>
@@ -115,7 +124,7 @@
       {% if request.GET.department %}
       <span class="inline-flex items-center bg-sky-100 text-sky-800 text-xs px-3 py-1 rounded-full">
         Department: {{ request.GET.department }}
-        <a href="?{{ request.GET.urlencode|remove:'&department='|remove:'department=' }}"
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'department' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}"
           class="ml-1.5 text-sky-600 hover:text-sky-800">
           &times;
         </a>
@@ -124,7 +133,7 @@
       {% if request.GET.course %}
       <span class="inline-flex items-center bg-sky-100 text-sky-800 text-xs px-3 py-1 rounded-full">
         Course: {{ request.GET.course }}
-        <a href="?{{ request.GET.urlencode|remove:'&course='|remove:'course=' }}"
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'course' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}"
           class="ml-1.5 text-sky-600 hover:text-sky-800">
           &times;
         </a>
@@ -133,7 +142,7 @@
       {% if request.GET.institution %}
       <span class="inline-flex items-center bg-sky-100 text-sky-800 text-xs px-3 py-1 rounded-full">
         Institution: {{ request.GET.institution }}
-        <a href="?{{ request.GET.urlencode|remove:'&institution='|remove:'institution=' }}"
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'institution' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}"
           class="ml-1.5 text-sky-600 hover:text-sky-800">
           &times;
         </a>
@@ -148,17 +157,19 @@
 {% if projects %}
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
   {% for project in projects %}
-  <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-sky-300 transition-all duration-300 group">
+  <div
+    class="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-sky-300 transition-all duration-300 group">
     <div class="p-5">
-      <!-- Category Badge -->
-      <div class="flex items-center justify-between mb-3">
-        <span class="inline-flex items-center bg-sky-50 text-sky-700 text-xs font-medium px-3 py-1 rounded-full">
+      <!-- Department Badge - Clickable -->
+      <div class="mb-3">
+        <a href="?department={{ project.department|urlencode }}"
+          class="inline-flex items-center bg-sky-50 text-sky-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-sky-100 transition-colors">
           <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+            <path
+              d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
           </svg>
           {{ project.department }}
-        </span>
-        <span class="text-xs text-slate-500">{{ project.year }}</span>
+        </a>
       </div>
 
       <!-- Title -->
@@ -175,13 +186,16 @@
       <div class="space-y-2 text-xs text-slate-500 mb-4">
         <div class="flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+            <path fill-rule="evenodd"
+              d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+              clip-rule="evenodd" />
           </svg>
           {{ project.institution }}
         </div>
         <div class="flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+            <path
+              d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
           </svg>
           {{ project.course }}
         </div>
@@ -197,7 +211,7 @@
           class="inline-flex items-center px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors">
           View Details
           <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </a>
       </div>
@@ -218,24 +232,24 @@
     {% endif %}
 
     {% for num in page_obj.paginator.page_range %}
-      {% if page_obj.number == num %}
-      <span class="px-3 py-2 rounded-lg bg-sky-600 text-sm font-medium text-white">
-        {{ num }}
-      </span>
-      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-        class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50">
-        {{ num }}
+    {% if page_obj.number == num %}
+    <span class="px-3 py-2 rounded-lg bg-sky-600 text-sm font-medium text-white">
+      {{ num }}
+    </span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+      href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+      class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50">
+      {{ num }}
       </a>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
 
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-      class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50">
-      Next
-    </a>
-    {% endif %}
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+        class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        Next
+      </a>
+      {% endif %}
   </nav>
 </div>
 {% endif %}
@@ -245,11 +259,14 @@
 <div class="text-center py-16">
   <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sky-100 mb-4">
     <svg class="w-8 h-8 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      <path fill-rule="evenodd"
+        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+        clip-rule="evenodd" />
     </svg>
   </div>
   <h3 class="text-lg font-medium text-slate-900 mb-2">No projects found</h3>
-  <p class="text-slate-600 mb-6 max-w-md mx-auto">Try adjusting your search or filter to find what you're looking for.</p>
+  <p class="text-slate-600 mb-6 max-w-md mx-auto">Try adjusting your search or filter to find what you're looking for.
+  </p>
   <a href="{% url 'project-list-page' %}"
     class="inline-flex items-center px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700">
     Clear all filters
@@ -260,12 +277,13 @@
 <!-- CTA Section -->
 <div class="mt-16 bg-gradient-to-r from-sky-600 to-sky-500 rounded-2xl p-8 text-center text-white">
   <h2 class="text-2xl font-bold mb-3">Need a custom project?</h2>
-  <p class="mb-6 opacity-90 max-w-md mx-auto">Can't find what you're looking for? Our team can create a custom project tailored to your requirements.</p>
-  <a href="#" 
+  <p class="mb-6 opacity-90 max-w-md mx-auto">Can't find what you're looking for? Our team can create a custom project
+    tailored to your requirements.</p>
+  <a href="#"
     class="inline-flex items-center px-6 py-3 bg-white text-sky-600 font-semibold rounded-lg hover:bg-slate-100 transition-colors">
     Request Custom Project
     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
     </svg>
   </a>
 </div>
