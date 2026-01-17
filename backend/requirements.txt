@@ -1,32 +1,16 @@
-# Core Django
 Django==5.0.1
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
-
-# Database
 psycopg2-binary==2.9.9
 dj-database-url==2.1.0
-
-# Production server
 gunicorn==21.2.0
 whitenoise==6.6.0
-
-# Environment
 python-dotenv==1.0.1
-
-# PDF processing
+python-decouple==3.8
 pypdf==5.1.0
-
-# Image processing (for ImageField)
 Pillow>=10.0.0
-
-# HTTP requests (for Paystack)
 requests==2.31.0
-
-# Required for drf-yasg on Python 3.12+
 setuptools>=70.0.0
-
-# Redis (optional, for caching)
 redis==5.0.1
