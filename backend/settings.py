@@ -3,6 +3,7 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+import sys
 
 # Import python-decouple to read .env file
 from decouple import config, Csv
@@ -17,6 +18,11 @@ except ImportError:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# -------------------------------------------------------------------
+# ENVIRONMENT DETECTION
+# -------------------------------------------------------------------
+IS_RENDER = 'RENDER' in os.environ
+IS_LOCAL_DEV = not IS_RENDER
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -25,10 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-production-12345678901234567890')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool) and IS_LOCAL_DEV
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*', cast=Csv())
-
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.onrender.com', cast=Csv())
 
 # Application definition
 
@@ -84,31 +89,45 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-# Use DATABASE_URL from environment (Render provides this)
-# Falls back to SQLite for local development
-if HAS_DJ_DATABASE_URL and os.environ.get('DATABASE_URL'):
+# -------------------------------------------------------------------
+# DATABASE CONFIGURATION - AUTOMATIC
+# -------------------------------------------------------------------
+# Determine which database to use based on environment
+if IS_RENDER:
+    # On Render: Always use PostgreSQL from DATABASE_URL
     DATABASES = {
         'default': dj_database_url.config(
-            default=config('DATABASE_URL', default=''),
+            default=os.environ.get('DATABASE_URL'),
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
+    print("✅ Using Render PostgreSQL database")
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+    # Local development: Check for DATABASE_URL in .env
+    database_url = config('DATABASE_URL', default='')
+    
+    if database_url and HAS_DJ_DATABASE_URL:
+        # Use PostgreSQL if DATABASE_URL is provided in .env
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=database_url,
+                conn_max_age=600
+            )
         }
-    }
+        print("✅ Using local PostgreSQL database (from .env)")
+    else:
+        # Fallback to SQLite for local development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+        print("⚠️  Using SQLite database (local development)")
+        print("   To use PostgreSQL locally, add DATABASE_URL to .env file")
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -124,23 +143,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+# -------------------------------------------------------------------
+# STATIC & MEDIA FILES
+# -------------------------------------------------------------------
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Only include static dir if it exists (for local dev)
 _static_dir = BASE_DIR / 'static'
@@ -149,47 +163,52 @@ if _static_dir.exists():
 else:
     STATICFILES_DIRS = []
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# WhiteNoise for serving static files in production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use S3 for media files in production (recommended)
+if IS_RENDER:
+    # Set up AWS S3 for media files (recommended for production)
+    # Comment out if you want to use Render's ephemeral storage
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='')
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+    
+    if all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME]):
+        print("✅ Using AWS S3 for media storage")
+    else:
+        print("⚠️  Using local media storage (ephemeral on Render)")
+        print("   Add AWS credentials to .env for permanent media storage")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Media files (uploaded project documents)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# File upload settings
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-
-# Allowed file extensions
-ALLOWED_EXTENSIONS = {
-    'document': ['.pdf', '.doc', '.docx', '.txt'],
-    'software': ['.zip', '.rar', '.7z', '.tar', '.gz'],
-    'image': ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
-}
-
-# Security settings for file uploads
+# -------------------------------------------------------------------
+# SECURITY SETTINGS
+# -------------------------------------------------------------------
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
-# Cache settings for better performance
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
+# CSRF settings - Auto-configure for Render
+CSRF_TRUSTED_ORIGINS = []
+if IS_RENDER:
+    # Get your Render URL automatically
+    RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    if RENDER_EXTERNAL_HOSTNAME:
+        CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+    CSRF_TRUSTED_ORIGINS.extend([
+        'https://*.onrender.com',
+    ])
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = not DEBUG  # True in production
-CSRF_COOKIE_SECURE = not DEBUG  # True in production
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
@@ -199,8 +218,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
-# Django REST Framework configuration
+# -------------------------------------------------------------------
+# REST FRAMEWORK
+# -------------------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
@@ -221,7 +241,6 @@ REST_FRAMEWORK = {
     },
 }
 
-
 # Simple JWT settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
@@ -231,32 +250,64 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-
-# CORS configuration
+# -------------------------------------------------------------------
+# CORS CONFIGURATION
+# -------------------------------------------------------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', 
-                             default='http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000', 
-                             cast=Csv())
 
-# Allow all origins in development
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # In production, only allow specific origins
+    CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', 
+                                 default='http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000', 
+                                 cast=Csv())
+    if IS_RENDER:
+        # Automatically add Render URL to CORS
+        RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+        if RENDER_EXTERNAL_HOSTNAME:
+            CORS_ALLOWED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
 
-
-# Security settings – these should be True/strict in production
+# Security settings
 CSRF_COOKIE_HTTPONLY = False  # Must be False for JavaScript to read CSRF token
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
-# Paystack configuration (read from .env file)
-PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='sk_test_e66649d8ec088de0c3d8a13a4eaa4da358ff5a33')
-PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY', default='pk_test_9be5827fe2a4ffcd8eeaf923b83dc6e5563acf42')
+# -------------------------------------------------------------------
+# PAYSTACK CONFIGURATION
+# -------------------------------------------------------------------
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='')
+PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY', default='')
 PAYSTACK_BASE_URL = config('PAYSTACK_BASE_URL', default='https://api.paystack.com')
 PAYSTACK_CALLBACK_URL = config('PAYSTACK_CALLBACK_URL', default='')
 
-# Email backend (console by default for development)
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@projecthub.local')
+# Auto-configure callback URL for Render
+if IS_RENDER and not PAYSTACK_CALLBACK_URL:
+    RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    if RENDER_EXTERNAL_HOSTNAME:
+        PAYSTACK_CALLBACK_URL = f'https://{RENDER_EXTERNAL_HOSTNAME}/payments/verify/'
 
+# -------------------------------------------------------------------
+# EMAIL CONFIGURATION
+# -------------------------------------------------------------------
+EMAIL_BACKEND = config('EMAIL_BACKEND', 
+                      default='django.core.mail.backends.console.EmailBackend' if IS_LOCAL_DEV 
+                      else 'django.core.mail.backends.smtp.EmailBackend')
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', 
+                           default='no-reply@projecthub.local' if IS_LOCAL_DEV 
+                           else 'noreply@yourdomain.com')
+
+if not IS_LOCAL_DEV:
+    # Production email settings
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# -------------------------------------------------------------------
+# PRODUCTION SECURITY SETTINGS
+# -------------------------------------------------------------------
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -264,3 +315,60 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# -------------------------------------------------------------------
+# LOGGING CONFIGURATION
+# -------------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log' if IS_LOCAL_DEV else '/var/log/django.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'projecthub': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+# -------------------------------------------------------------------
+# ENVIRONMENT INFORMATION
+# -------------------------------------------------------------------
+print(f"\n{'='*60}")
+print(f"Environment: {'PRODUCTION (Render)' if IS_RENDER else 'LOCAL DEVELOPMENT'}")
+print(f"Debug Mode: {DEBUG}")
+print(f"Database: {DATABASES['default']['ENGINE']}")
+print(f"Allowed Hosts: {ALLOWED_HOSTS}")
+print(f"{'='*60}\n")
+
+if IS_LOCAL_DEV and DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    print("⚠️  WARNING: You are using SQLite database locally.")
+    print("   Projects added locally will NOT appear on your Render site.")
+    print("   To sync databases, add DATABASE_URL to your .env file pointing to your Render PostgreSQL.")
+    print("   Or add projects directly at: https://your-app.onrender.com/admin")
+    print()
