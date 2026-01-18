@@ -1,28 +1,33 @@
+# render.yaml - Alternative with auto-database connection
 services:
   - type: web
     name: projecthub
     runtime: python
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn backend.wsgi:application"
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+      python manage.py reset_admin
+    startCommand: gunicorn backend.wsgi:application
     envVars:
-      - key: postgresql://projecthub_db_user:0kgThPalK6sitRb0JFyDaRtoM6zBEzao@dpg-d5ft3df5r7bs73ddbr60-a.frankfurt-postgres.render.com/projecthub_db
+      - key: SECRET_KEY
+        value: django-insecure-b*c15f(ojd-q@0b%za&+8u=vj5+x)6y=9bv@7%@55@klclm+n^
+      - key: PAYSTACK_SECRET_KEY
+        value: sk_test_e66649d8ec088de0c3d8a13a4eaa4da358ff5a33
+      - key: PAYSTACK_PUBLIC_KEY
+        value: pk_test_9be5827fe2a4ffcd8eeaf923b83dc6e5563acf42
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ALLOWED_HOSTS
+        value: "projecthub-45pr.onrender.com,localhost,127.0.0.1"
+      - key: DATABASE_URL
         fromDatabase:
           name: projecthub-db
           property: connectionString
-      - key: django-insecure-b*c15f(ojd-q@0b%za&+8u=vj5+x)6y=9bv@7%@55@klclm+n^
-
-        generateValue: true
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: DEBUG
-        value: "False"
-      - key: sk_test_e66649d8ec088de0c3d8a13a4eaa4da358ff5a33
-        sync: false
-      - key: pk_test_9be5827fe2a4ffcd8eeaf923b83dc6e5563acf42
-        sync: false
 
 databases:
   - name: projecthub-db
-    databaseName: projecthub
-    user: projecthub
+    databaseName: projecthub_db
+    user: projecthub_db_user
     plan: free
