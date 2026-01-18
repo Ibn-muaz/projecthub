@@ -1,4 +1,4 @@
-# backend/urls.py - FIXED VERSION (NO EMERGENCY CODE)
+# backend/urls.py - CLEANED VERSION
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings

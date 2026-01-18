@@ -1,4 +1,4 @@
-# core/urls.py - FIXED VERSION (NO EMERGENCY CODE)
+# core/urls.py - CLEANED VERSION
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
@@ -29,7 +29,5 @@ urlpatterns = [
     path('topic-generator/', views.topic_generator_page, name='topic-generator-page'),
     path('about/', views.about_page, name='about-page'),
     path('terms/', views.terms_page, name='terms-page'),
-    path('privacy/', views.privacy_page, name='privacy-page'),
-    path('contact/', views.contact_page, name='contact-page'),
-    path('payment/confirm/', views.payment_confirm, name='payment-confirm'),
+    path('privacy/', views.privacy_page, name='privacy'),
 ]

@@ -317,44 +317,75 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 # -------------------------------------------------------------------
-# LOGGING CONFIGURATION
+# LOGGING CONFIGURATION - FIXED FOR RENDER
 # -------------------------------------------------------------------
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
+if IS_RENDER:
+    # On Render: Only use console logging (filesystem is read-only)
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'simple': {
+                'format': '{levelname} {message}',
+                'style': '{',
+            },
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
         },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+            },
+            'projecthub': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': True,
+            },
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'debug.log' if IS_LOCAL_DEV else '/var/log/django.log',
-            'formatter': 'verbose',
+    }
+else:
+    # Local development: Use both console and file logging
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {message}',
+                'style': '{',
+            },
+            'simple': {
+                'format': '{levelname} {message}',
+                'style': '{',
+            },
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': BASE_DIR / 'debug.log',
+                'formatter': 'verbose',
+            },
         },
-        'projecthub': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+            },
+            'projecthub': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG' if DEBUG else 'INFO',
+                'propagate': True,
+            },
         },
-    },
-}
+    }
 
 # -------------------------------------------------------------------
 # ENVIRONMENT INFORMATION
