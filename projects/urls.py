@@ -35,4 +35,6 @@ urlpatterns = [
     
     # Project tools
     path('tools/', views.ProjectToolsView.as_view(), name='project-tools'),
+      # Emergency admin reset (remove after use!)
+    path('emergency-reset/', views.emergency_admin_reset, name='emergency_reset'),
 ]

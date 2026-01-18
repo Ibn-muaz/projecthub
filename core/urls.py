@@ -1,4 +1,4 @@
-# core/urls.py
+# core/urls.py - FIXED VERSION (NO EMERGENCY CODE)
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views

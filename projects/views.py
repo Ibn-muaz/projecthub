@@ -715,3 +715,80 @@ class TopicStatisticsView(APIView):
                 {'detail': 'Failed to get topic statistics.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+            # =============== EMERGENCY ADMIN PASSWORD RESET ===============
+# Add these imports if not already imported
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def emergency_admin_reset(request):
+    """
+    Emergency admin password reset view.
+    This view is to be used only in emergencies and should be removed after use.
+    """
+    # Secret token to prevent unauthorized access
+    SECRET_TOKEN = "projecthub_emergency_2024_reset"
+    
+    # Get the token from the query parameters or POST data
+    token = request.GET.get('token') or request.POST.get('token')
+    
+    if token != SECRET_TOKEN:
+        return HttpResponse(
+            '<h1>Access Denied</h1><p>Invalid or missing token.</p>',
+            status=403,
+            content_type='text/html'
+        )
+    
+    try:
+        # Get or create the admin user
+        try:
+            admin_user = User.objects.get(username='admin')
+            action = "UPDATED"
+        except User.DoesNotExist:
+            # Create a new admin user if doesn't exist
+            admin_user = User(username='admin@2223', email='jabaltech1@gmail.com')
+            action = "CREATED"
+        
+        # Set the new password
+        new_password = "AdminProjectHub@2223"  # CHANGE THIS AFTER LOGIN!
+        admin_user.set_password(new_password)
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.is_active = True
+        admin_user.save()
+        
+        # Return the credentials
+        html_response = f"""
+        <html>
+        <head><title>Password Reset Success</title></head>
+        <body style="font-family: Arial; padding: 40px;">
+            <h1>✅ Admin Password Reset Successful!</h1>
+            <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3>Login Credentials:</h3>
+                <p><strong>URL:</strong> <a href="/admin/" target="_blank">/admin/</a></p>
+                <p><strong>Username:</strong> <code>admin</code></p>
+                <p><strong>Password:</strong> <code>{new_password}</code></p>
+                <p><strong>Status:</strong> User {action}</p>
+            </div>
+            <div style="color: red; border: 2px solid red; padding: 15px; margin: 20px 0;">
+                <h3>⚠️ IMPORTANT SECURITY WARNING:</h3>
+                <ol>
+                    <li>Log in IMMEDIATELY and change this password!</li>
+                    <li>Remove this emergency reset view from your code after use!</li>
+                    <li>Consider deleting this user after creating a proper admin account.</li>
+                </ol>
+            </div>
+            <p><a href="/admin/">Click here to go to Admin Login</a></p>
+        </body>
+        </html>
+        """
+        
+        return HttpResponse(html_response)
+    
+    except Exception as e:
+        logger.error(f"Emergency reset error: {str(e)}")
+        return HttpResponse(
+            f'<h1>Error</h1><p>{str(e)}</p>',
+            status=500,
+            content_type='text/html'
+        )
