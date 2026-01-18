@@ -1,4 +1,4 @@
-# core/urls.py - CLEANED VERSION
+# core/urls.py - UPDATED WITH ALL URL PATTERNS
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
@@ -25,9 +25,11 @@ urlpatterns = [
     path('admin/projects/create/', views.admin_project_create_page, name='admin-project-create'),
     path('admin/projects/<int:pk>/edit/', views.admin_project_edit_page, name='admin-project-edit'),
     
-    # Other pages
+    # Other pages - MAKE SURE ALL THESE EXIST
     path('topic-generator/', views.topic_generator_page, name='topic-generator-page'),
     path('about/', views.about_page, name='about-page'),
     path('terms/', views.terms_page, name='terms-page'),
-    path('privacy/', views.privacy_page, name='privacy'),
+    path('privacy/', views.privacy_page, name='privacy-page'),  # THIS WAS MISSING!
+    path('contact/', views.contact_page, name='contact-page'),
+    path('payment/confirm/', views.payment_confirm, name='payment-confirm'),
 ]
