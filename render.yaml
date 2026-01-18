@@ -15,12 +15,8 @@ services:
       - key: PAYSTACK_PUBLIC_KEY
         value: "pk_test_9be5827fe2a4ffcd8eeaf923b83dc6e5563acf42"
       - key: DEBUG
-        value: "False"
+        value: "True"  # TEMPORARY - CHANGE TO False LATER
       - key: PYTHON_VERSION
         value: "3.11.0"
-
-databases:
-  - name: projecthub-db
-    databaseName: projecthub_db
-    user: projecthub_db_user
-    plan: free
+      - key: DJANGO_SETTINGS_MODULE
+        value: "backend.settings"
