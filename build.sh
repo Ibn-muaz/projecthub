@@ -6,7 +6,7 @@ echo "🚀 Starting deployment..."
 
 # Upgrade pip and install dependencies
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 
 # Collect static files
 echo "📦 Collecting static files..."

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.urls import reverse
 from rest_framework import status, views, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -68,18 +69,18 @@ class InitPaymentView(views.APIView):
                 "Content-Type": "application/json",
             }
             
-            # Construct callback URL more reliably
+            # Construct callback URL using Django reverse to ensure correct path
             try:
-                scheme = request.scheme
-                host = request.get_host()
-                callback_url = f"{scheme}://{host}/payments/confirm/"
+                callback_url = request.build_absolute_uri(reverse('payment-confirm'))
             except Exception as e:
-                logger.warning(f"Could not construct callback URL: {str(e)}")
-                # Fallback to a default URL from settings or construct from host
-                if hasattr(settings, 'PAYSTACK_CALLBACK_URL') and settings.PAYSTACK_CALLBACK_URL:
+                logger.warning(f"Could not construct callback URL via reverse: {str(e)}")
+                if getattr(settings, 'PAYSTACK_CALLBACK_URL', None):
                     callback_url = settings.PAYSTACK_CALLBACK_URL
                 else:
-                    callback_url = f"https://{request.META.get('HTTP_HOST', 'localhost')}/payments/confirm/"
+                    scheme = request.scheme or 'https'
+                    host = request.get_host() or request.META.get('HTTP_HOST', 'localhost')
+                    # Fallback to core app path
+                    callback_url = f"{scheme}://{host}/payment/confirm/"
             
             data = {
                 "email": email,

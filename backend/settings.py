@@ -24,8 +24,8 @@ IS_LOCAL_DEV = not IS_RENDER
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-production-12345678901234567890')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# TEMPORARILY SET DEBUG=True TO SEE ERRORS
-DEBUG = config('DEBUG', default=True, cast=bool) or IS_RENDER  # CHANGED THIS LINE
+# Debug mode (should be False in production unless explicitly enabled)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,projecthub-45pr.onrender.com', cast=Csv())
 
