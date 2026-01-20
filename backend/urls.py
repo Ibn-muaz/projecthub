@@ -40,7 +40,7 @@ urlpatterns = [
     path('api/auth/', include('accounts.urls')),
     
     # Projects App API
-    path('api/projects/', include('projects.urls')),
+    path('api/', include('projects.urls')),
 
     # Core App (Web pages)
     path('', include('core.urls')),

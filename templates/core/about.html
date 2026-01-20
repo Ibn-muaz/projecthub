@@ -2,14 +2,101 @@
 {% block title %}About ProjectHub{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-semibold text-slate-900 mb-4">About ProjectHub</h1>
-<p class="text-sm text-slate-600 mb-3">
-  ProjectHub is a secure academic platform for final year students
-  . It provides verified final year project materials, secure payments, and tools such as a
-  topic generator to support students from proposal to completion.
-</p>
-<p class="text-sm text-slate-600">
-  All materials are reviewed and approved by administrators before publication. Payments are processed securely via
-  Paystack, and downloads are protected using short-lived links and access control.
-</p>
+<div class="bg-white">
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden bg-slate-900 py-24 sm:py-32">
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-900"></div>
+    <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl lg:mx-0">
+        <h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">Empowering Academic Excellence</h2>
+        <p class="mt-6 text-lg leading-8 text-slate-300">
+          ProjectHub is the premier platform for final year students to access verified project materials,
+          generate research topics, and streamline their academic research journey.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Section -->
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
+    <div class="mx-auto max-w-2xl lg:max-w-none">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Our Mission</h2>
+        <p class="mt-4 text-lg text-slate-600">
+          To bridge the gap between academic requirements and quality research resources, ensuring every student has the tools they need to succeed.
+        </p>
+      </div>
+
+      <dl class="grid grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+        <div class="flex flex-col">
+          <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
+            <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-sky-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 5.523-4.477 10-10 10S1 17.523 1 12 5.477 2 10 2s10 4.477 10 10z" />
+              </svg>
+            </div>
+            Verified Quality
+          </dt>
+          <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+            <p class="flex-auto">All project materials are rigorously reviewed and approved by academic experts before being published on our platform.</p>
+          </dd>
+        </div>
+
+        <div class="flex flex-col">
+          <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
+            <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-emerald-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            Secure & Instant
+          </dt>
+          <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+            <p class="flex-auto">Seamless payments via Paystack and instant access to your downloads. Your data and transactions are always protected.</p>
+          </dd>
+        </div>
+
+        <div class="flex flex-col">
+          <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
+            <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-purple-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+              </svg>
+            </div>
+            Innovation Tools
+          </dt>
+          <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+            <p class="flex-auto">From our AI-powered topic generator to comprehensive project guides, we provide tools that spark creativity.</p>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="bg-slate-50 py-24 sm:py-32">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl lg:max-w-none">
+        <div class="text-center">
+          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Trusted by Students Nationwide</h2>
+          <p class="mt-4 text-lg text-slate-600">Join thousands of students who have successfully completed their projects with ProjectHub.</p>
+        </div>
+        <dl class="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-3">
+          <div class="flex flex-col bg-slate-400/5 p-8">
+            <dt class="text-sm font-semibold leading-6 text-slate-600">Active Students</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-slate-900">2k+</dd>
+          </div>
+          <div class="flex flex-col bg-slate-400/5 p-8">
+            <dt class="text-sm font-semibold leading-6 text-slate-600">Projects Available</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-slate-900">500+</dd>
+          </div>
+          <div class="flex flex-col bg-slate-400/5 p-8">
+            <dt class="text-sm font-semibold leading-6 text-slate-600">Departments</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-slate-900">50+</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

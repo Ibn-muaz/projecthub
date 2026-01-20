@@ -242,7 +242,7 @@
       purchaseSpinner.classList.remove('hidden');
       purchaseText.textContent = 'Processing...';
 
-      const resp = await fetch('/api/projects/payments/init/', {
+      const resp = await fetch('/api/payments/init/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

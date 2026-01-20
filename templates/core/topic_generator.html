@@ -318,7 +318,7 @@
     const csrftoken = getCookie('csrftoken');
     
     try {
-      const response = await fetch('/api/projects/tools/topic-generator/', {
+      const response = await fetch('/api/tools/topic-generator/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

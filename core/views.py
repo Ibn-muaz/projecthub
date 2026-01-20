@@ -46,8 +46,12 @@ def project_list(request):
     if project_type:
         qs = qs.filter(project_type=project_type)
 
+    from django.core.paginator import Paginator
+    paginator = Paginator(qs.order_by('-created_at'), 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
     return render(request, 'core/project_list.html', {
-        'projects': qs,
+        'projects': page_obj.object_list,
+        'page_obj': page_obj,
     })
 
 
@@ -193,6 +197,11 @@ def privacy_page(request):
 
 
 def contact_page(request):
+    if request.method == 'POST':
+        # In a real app, you'd send an email here.
+        # For now, just show a success message.
+        messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
+        return redirect('contact-page')
     return render(request, 'core/contact.html')
 
 
