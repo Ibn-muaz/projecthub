@@ -32,4 +32,7 @@ urlpatterns = [
     path('privacy/', views.privacy_page, name='privacy-page'),  # THIS WAS MISSING!
     path('contact/', views.contact_page, name='contact-page'),
     path('payment/confirm/', views.payment_confirm, name='payment-confirm'),
+    
+    # Debug pages
+    path('debug/departments/', views.debug_departments, name='debug-departments'),
 ]

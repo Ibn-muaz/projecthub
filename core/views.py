@@ -5,6 +5,7 @@ from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+from django.db.models import Q
 
 from accounts.forms import UserRegistrationForm
 
@@ -218,6 +219,20 @@ def login_page(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         
+        # Debug: Check if user exists
+        from accounts.models import User
+        try:
+            # Try to find user by email
+            user_by_email = User.objects.get(email=email)
+            print(f"DEBUG: User found by email: {user_by_email.username}, is_active: {user_by_email.is_active}")
+        except User.DoesNotExist:
+            try:
+                # Try to find user by username (in case they entered username)
+                user_by_username = User.objects.get(username=email)
+                print(f"DEBUG: User found by username: {user_by_username.email}, is_active: {user_by_username.is_active}")
+            except User.DoesNotExist:
+                print(f"DEBUG: No user found with email/username: {email}")
+        
         # Authenticate using the custom backend (email or username)
         user = authenticate(request, username=email, password=password)
         
@@ -226,7 +241,18 @@ def login_page(request):
             next_url = request.GET.get('next', 'landing')
             return redirect(next_url)
         else:
-            messages.error(request, 'Invalid email or password')
+            # Provide more detailed error message
+            error_msg = 'Invalid email or password'
+            try:
+                # Check if user exists but password is wrong
+                from accounts.models import User
+                if User.objects.filter(Q(email=email) | Q(username=email)).exists():
+                    error_msg = 'Invalid password. Please check your password and try again.'
+                else:
+                    error_msg = 'No account found with this email/username. Please check your email or register for a new account.'
+            except:
+                pass
+            messages.error(request, error_msg)
     
     return render(request, 'core/login.html')
 
@@ -245,7 +271,38 @@ def register_page(request):
         else:
             # If form is invalid, pass errors to template
             return render(request, 'core/register.html', {'form': form})
-    else:
-        form = UserRegistrationForm()
     
     return render(request, 'core/register.html', {'form': form})
+
+
+def debug_departments(request):
+    """Debug view to show department-faculty mappings from database"""
+    from projects.models import Department
+    from projects.constants import FACULTY_DEPARTMENTS
+    
+    # Get all departments from database
+    departments = Department.objects.all()
+    
+    # Group departments by faculty
+    faculty_departments = {}
+    for dept in departments:
+        faculty = dept.faculty or 'No Faculty'
+        if faculty not in faculty_departments:
+            faculty_departments[faculty] = []
+        faculty_departments[faculty].append(dept.name)
+    
+    # Get faculty names from constants for comparison
+    constants_faculties = list(FACULTY_DEPARTMENTS.keys())
+    db_faculties = list(faculty_departments.keys())
+    faculty_names = list(set(db_faculties))  # Unique faculty names from database
+    
+    context = {
+        'faculty_departments': faculty_departments,
+        'constants_faculties': constants_faculties,
+        'db_faculties': db_faculties,
+        'faculty_names': faculty_names,
+        'departments': departments,
+        'total_departments': departments.count(),
+    }
+    
+    return render(request, 'core/debug_departments.html', context)
