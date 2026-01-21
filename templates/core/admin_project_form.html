@@ -1,9 +1,12 @@
+[file name]: admin_project_form.html
+[file content begin]
 {% extends 'base.html' %}
 {% block title %}{{ project|default_if_none:'' }} Project - Admin - ProjectHub{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <div class="mb-6">
+<div class="container mx-auto px-4 py-4 md:py-8 max-w-4xl">
+  <!-- Back Button -->
+  <div class="mb-4 md:mb-6">
     <a href="{% url 'admin-project-list' %}" class="inline-flex items-center text-sm text-sky-600 hover:text-sky-700">
       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -12,26 +15,30 @@
     </a>
   </div>
 
-  <h1 class="text-3xl font-bold text-slate-900 mb-6">
+  <!-- Page Title -->
+  <h1 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4 md:mb-6">
     {% if project %}Edit Project{% else %}Add New Project{% endif %}
   </h1>
 
+  <!-- Success Message -->
   {% if success %}
-  <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="mb-4 md:mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
+    <svg class="w-5 h-5 text-green-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
     </svg>
     <span class="text-green-800 font-medium">Project saved successfully!</span>
   </div>
   {% endif %}
 
+  <!-- Main Form -->
   <form method="post" enctype="multipart/form-data"
-    class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 space-y-6">
+    class="bg-white rounded-xl md:rounded-2xl shadow-lg border border-slate-200 p-4 md:p-6 space-y-4 md:space-y-6">
     {% csrf_token %}
 
+    <!-- Non-field Errors -->
     {% if form.non_field_errors %}
-    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
-      <ul class="text-red-700 text-sm">
+    <div class="p-3 md:p-4 bg-red-50 border border-red-200 rounded-lg">
+      <ul class="text-red-700 text-xs md:text-sm">
         {% for error in form.non_field_errors %}
         <li>{{ error }}</li>
         {% endfor %}
@@ -40,20 +47,20 @@
     {% endif %}
 
     <!-- Basic Information -->
-    <div class="border-b border-slate-200 pb-6">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Basic Information</h2>
-      <div class="grid md:grid-cols-2 gap-4">
+    <div class="border-b border-slate-200 pb-4 md:pb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Basic Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Title *</label>
           <input type="text" name="title" value="{{ form.title.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
             required>
           {% if form.title.errors %}<p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>{% endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Slug</label>
           <input type="text" name="slug" value="{{ form.slug.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           <p class="text-xs text-slate-500 mt-1">Leave blank to auto-generate from title</p>
           {% if form.slug.errors %}<p class="text-red-500 text-xs mt-1">{{ form.slug.errors.0 }}</p>{% endif %}
         </div>
@@ -61,20 +68,20 @@
     </div>
 
     <!-- Description -->
-    <div class="border-b border-slate-200 pb-6">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Description</h2>
-      <div class="space-y-4">
+    <div class="border-b border-slate-200 pb-4 md:pb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Description</h2>
+      <div class="space-y-3 md:space-y-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Abstract *</label>
-          <textarea name="abstract" rows="4"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+          <textarea name="abstract" rows="3" 
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
             required>{{ form.abstract.value|default:'' }}</textarea>
           {% if form.abstract.errors %}<p class="text-red-500 text-xs mt-1">{{ form.abstract.errors.0 }}</p>{% endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
-          <textarea name="description" rows="6"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">{{ form.description.value|default:'' }}</textarea>
+          <textarea name="description" rows="4"
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">{{ form.description.value|default:'' }}</textarea>
           {% if form.description.errors %}<p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>{%
           endif %}
         </div>
@@ -82,46 +89,46 @@
     </div>
 
     <!-- Academic Information -->
-    <div class="border-b border-slate-200 pb-6">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Academic Information</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="border-b border-slate-200 pb-4 md:pb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Academic Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Year</label>
           <input type="number" name="year" value="{{ form.year.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           {% if form.year.errors %}<p class="text-red-500 text-xs mt-1">{{ form.year.errors.0 }}</p>{% endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Institution</label>
           <input type="text" name="institution" value="{{ form.institution.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           {% if form.institution.errors %}<p class="text-red-500 text-xs mt-1">{{ form.institution.errors.0 }}</p>{%
           endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Department</label>
           <input type="text" name="department" value="{{ form.department.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           {% if form.department.errors %}<p class="text-red-500 text-xs mt-1">{{ form.department.errors.0 }}</p>{% endif
           %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Course</label>
           <input type="text" name="course" value="{{ form.course.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           {% if form.course.errors %}<p class="text-red-500 text-xs mt-1">{{ form.course.errors.0 }}</p>{% endif %}
         </div>
       </div>
     </div>
 
     <!-- Pricing & Status -->
-    <div class="border-b border-slate-200 pb-6">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Pricing & Status</h2>
-      <div class="grid md:grid-cols-4 gap-4">
+    <div class="border-b border-slate-200 pb-4 md:pb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Pricing & Status</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Project Type</label>
           <select name="project_type"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
             <option value="">Select type</option>
             <option value="RESEARCH" {% if form.project_type.value=='RESEARCH' %}selected{% endif %}>Research</option>
             <option value="SOFTWARE" {% if form.project_type.value=='SOFTWARE' %}selected{% endif %}>Software</option>
@@ -133,20 +140,20 @@
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Price (₦)</label>
           <input type="number" step="0.01" name="price" value="{{ form.price.value|default:'0' }}"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           {% if form.price.errors %}<p class="text-red-500 text-xs mt-1">{{ form.price.errors.0 }}</p>{% endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
           <select name="status"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
             <option value="PENDING" {% if form.status.value=='PENDING' %}selected{% endif %}>Pending</option>
             <option value="APPROVED" {% if form.status.value=='APPROVED' %}selected{% endif %}>Approved</option>
             <option value="REJECTED" {% if form.status.value=='REJECTED' %}selected{% endif %}>Rejected</option>
           </select>
           {% if form.status.errors %}<p class="text-red-500 text-xs mt-1">{{ form.status.errors.0 }}</p>{% endif %}
         </div>
-        <div class="flex items-end">
+        <div class="flex items-center md:items-end pt-1">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" name="is_featured" {% if form.is_featured.value %}checked{% endif %}
               class="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500">
@@ -157,41 +164,60 @@
     </div>
 
     <!-- Files -->
-    <div class="border-b border-slate-200 pb-6">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Files</h2>
-      <div class="grid md:grid-cols-2 gap-4">
+    <div class="border-b border-slate-200 pb-4 md:pb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Files</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Document File (PDF)</label>
           <input type="file" name="document_file" accept=".pdf,.doc,.docx"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
-          {% if project.document_file %}<p class="text-xs text-slate-500 mt-1">Current: {{ project.document_file.name }}
-          </p>{% endif %}
+            class="w-full rounded-lg border border-slate-300 px-2 md:px-4 py-2 text-xs md:text-sm file:mr-2 md:file:mr-4 file:py-1 md:file:py-2 file:px-2 md:file:px-4 file:rounded-lg file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
+          {% if project.document_file %}
+          <p class="text-xs text-slate-500 mt-1 truncate">Current: {{ project.document_file.name }}</p>
+          {% endif %}
           {% if form.document_file.errors %}<p class="text-red-500 text-xs mt-1">{{ form.document_file.errors.0 }}</p>{%
           endif %}
         </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Software File (ZIP)</label>
           <input type="file" name="software_file" accept=".zip,.rar,.7z"
-            class="w-full rounded-lg border border-slate-300 px-4 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
-          {% if project.software_file %}<p class="text-xs text-slate-500 mt-1">Current: {{ project.software_file.name }}
-          </p>{% endif %}
+            class="w-full rounded-lg border border-slate-300 px-2 md:px-4 py-2 text-xs md:text-sm file:mr-2 md:file:mr-4 file:py-1 md:file:py-2 file:px-2 md:file:px-4 file:rounded-lg file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
+          {% if project.software_file %}
+          <p class="text-xs text-slate-500 mt-1 truncate">Current: {{ project.software_file.name }}</p>
+          {% endif %}
           {% if form.software_file.errors %}<p class="text-red-500 text-xs mt-1">{{ form.software_file.errors.0 }}</p>{%
           endif %}
         </div>
       </div>
     </div>
 
-    <!-- Submit -->
-    <div class="flex items-center gap-4 pt-4">
+    <!-- Submit Buttons -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 md:gap-4 pt-4">
       <button type="submit"
-        class="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-sky-600 to-emerald-600 text-white font-semibold hover:from-sky-700 hover:to-emerald-700 transition-all duration-200 shadow-lg">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="w-full sm:w-auto inline-flex items-center justify-center px-4 md:px-6 py-2.5 md:py-3 rounded-lg bg-gradient-to-r from-sky-600 to-emerald-600 text-white font-semibold text-sm md:text-base hover:from-sky-700 hover:to-emerald-700 transition-all duration-200 shadow-lg">
+        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         Save Project
       </button>
-      <a href="{% url 'admin-project-list' %}" class="text-slate-600 hover:text-slate-800 font-medium">Cancel</a>
+      <a href="{% url 'admin-project-list' %}"
+        class="w-full sm:w-auto text-center text-slate-600 hover:text-slate-800 font-medium text-sm md:text-base py-2.5">
+        Cancel
+      </a>
     </div>
   </form>
 </div>
+
+<style>
+  /* Improve mobile file input appearance */
+  input[type="file"]::-webkit-file-upload-button {
+    font-size: 0.75rem;
+  }
+  
+  @media (max-width: 768px) {
+    input[type="file"] {
+      font-size: 14px;
+    }
+  }
+</style>
+
 {% endblock %}

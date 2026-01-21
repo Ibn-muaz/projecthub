@@ -240,14 +240,8 @@ def register_page(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            
-            # FIX: Set the backend attribute to EmailBackend before logging in
-            user.backend = 'accounts.backends.EmailBackend'
-            
-            # Now log the user in
-            login(request, user)
-            messages.success(request, 'Account created successfully!')
-            return redirect('landing')
+            messages.success(request, 'Account created successfully! Please log in to continue.')
+            return redirect('login-page')
         else:
             # If form is invalid, pass errors to template
             return render(request, 'core/register.html', {'form': form})
