@@ -28,6 +28,7 @@ def project_list(request):
 
     q = request.GET.get('q')
     department = request.GET.get('department')
+    faculty = request.GET.get('faculty')
     course = request.GET.get('course')
     institution = request.GET.get('institution')
     year = request.GET.get('year')
@@ -37,6 +38,8 @@ def project_list(request):
         qs = qs.filter(title__icontains=q)
     if department:
         qs = qs.filter(department__name__iexact=department)
+    if faculty:
+        qs = qs.filter(department__faculty__iexact=faculty)
     if course:
         qs = qs.filter(course__iexact=course)
     if institution:
@@ -66,6 +69,7 @@ def project_detail(request, slug):
     })
 
 
+@login_required
 def student_dashboard(request):
     # Data is loaded via JS from /api/me/purchases and /api/me/downloads
     return render(request, 'core/student_dashboard.html')

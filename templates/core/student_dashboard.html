@@ -142,8 +142,8 @@
           purchaseEl.className = 'p-6 hover:bg-slate-50 transition-colors duration-150';
           purchaseEl.innerHTML = `
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div class="flex-1">
-                <h3 class="font-semibold text-slate-900 mb-1">${purchase.project_title || 'Project #' + purchase.project}</h3>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-slate-900 mb-1 truncate" title="${purchase.project_title || 'Project #' + purchase.project}">${purchase.project_title || 'Project #' + purchase.project}</h3>
                 <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600">
                   <span class="inline-flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,13 +181,29 @@
   })();
 
   async function downloadProject(projectId) {
-    const accessToken = localStorage.getItem('accessToken');
+    // Get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
     try {
       const resp = await fetch('/api/downloads/request/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken,
+          'X-CSRFToken': csrftoken,
         },
         body: JSON.stringify({ project_id: projectId, download_type: 'document' }),
       });
