@@ -72,18 +72,18 @@
       <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Description</h2>
       <div class="space-y-3 md:space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Abstract *</label>
-          <textarea name="abstract" rows="3" 
-            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-            required>{{ form.abstract.value|default:'' }}</textarea>
-          {% if form.abstract.errors %}<p class="text-red-500 text-xs mt-1">{{ form.abstract.errors.0 }}</p>{% endif %}
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Full Description *</label>
           <textarea name="description" rows="4"
-            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">{{ form.description.value|default:'' }}</textarea>
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+            required>{{ form.description.value|default:'' }}</textarea>
           {% if form.description.errors %}<p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>{%
           endif %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Abstract</label>
+          <textarea name="abstract" rows="3" 
+            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">{{ form.abstract.value|default:'' }}</textarea>
+          {% if form.abstract.errors %}<p class="text-red-500 text-xs mt-1">{{ form.abstract.errors.0 }}</p>{% endif %}
         </div>
       </div>
     </div>
@@ -91,13 +91,7 @@
     <!-- Academic Information -->
     <div class="border-b border-slate-200 pb-4 md:pb-6">
       <h2 class="text-lg font-semibold text-slate-900 mb-3 md:mb-4">Academic Information</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Year</label>
-          <input type="number" name="year" value="{{ form.year.value|default:'' }}"
-            class="w-full rounded-lg border border-slate-300 px-3 md:px-4 py-2 text-sm md:text-base focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-          {% if form.year.errors %}<p class="text-red-500 text-xs mt-1">{{ form.year.errors.0 }}</p>{% endif %}
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Institution</label>
           <input type="text" name="institution" value="{{ form.institution.value|default:'' }}"

@@ -4,11 +4,13 @@ from .models import ProjectMaterial
 
 
 class ProjectMaterialAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=True)
+    abstract = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
     class Meta:
         model = ProjectMaterial
         fields = [
-            'title', 'slug', 'abstract', 'description', 'year',
+            'title', 'slug', 'description', 'abstract',
             'institution', 'department', 'course', 'category',
             'project_type', 'programming_language', 'framework',
             'database', 'keywords', 'price', 'status', 'document_file',
@@ -19,7 +21,7 @@ class ProjectMaterialAdminForm(forms.ModelForm):
         slug = self.cleaned_data.get('slug') or ''
         title = self.cleaned_data.get('title') or ''
         if not slug:
-            slug = slugify(title)
+            slug = slugify(title) if title else slugify(self.cleaned_data.get('description', ''))
         return slug
 
     def save(self, commit=True):

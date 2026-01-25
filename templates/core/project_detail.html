@@ -98,6 +98,12 @@
           <div class="font-medium text-slate-900 text-sm md:text-base">{{ project.page_count }}</div>
         </div>
         {% endif %}
+        {% if project.page_count %}
+        <div class="bg-slate-50 rounded-lg p-3 md:p-4">
+          <div class="text-xs md:text-sm text-slate-500 mb-1">Pages</div>
+          <div class="font-medium text-slate-900 text-sm md:text-base">{{ project.page_count }}</div>
+        </div>
+        {% endif %}
         {% if project.chapters %}
         <div class="bg-slate-50 rounded-lg p-3 md:p-4">
           <div class="text-xs md:text-sm text-slate-500 mb-1">Chapters</div>

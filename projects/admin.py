@@ -51,6 +51,30 @@ class ProjectMaterialAdmin(admin.ModelAdmin):
     )
     
     def save_model(self, request, obj, form, change):
+        if 'document_file' in form.changed_data and obj.document_file:
+            try:
+                from PyPDF4 import PdfFileReader
+                from io import BytesIO
+
+                # Reset the file pointer to the beginning
+                obj.document_file.seek(0)
+                
+                # Read the file content into a BytesIO object
+                file_content = BytesIO(obj.document_file.read())
+                
+                # Create a PDF reader object
+                pdf_reader = PdfFileReader(file_content, strict=False)
+                
+                # Get the number of pages
+                obj.page_count = pdf_reader.getNumPages()
+                
+                # Reset the file pointer again before saving
+                obj.document_file.seek(0)
+            except Exception as e:
+                # Handle cases where the file is not a valid PDF or other errors
+                print(f"Error processing PDF file: {e}")
+                obj.page_count = None
+
         if not change:  # If creating a new project (not editing)
             obj.status = ProjectMaterial.Status.APPROVED
             obj.approved_by = request.user
