@@ -26,10 +26,11 @@
   <tbody>
     {% for project in page_obj.object_list %}
       <tr class="border-b border-slate-100 last:border-b-0">
-        <td class="px-3 py-2 max-w-[200px]" title="{{ project.title }}">
-          <div class="truncate w-full">{{ project.title }}</div>
+        <td class="px-3 py-2" title="{{ project.title }}">
+          <div class="truncate w-48">{{ project.title }}</div>
         </td>
         <td class="px-3 py-2">{{ project.department }}</td>
+        <td class="px-3 py-2">{{ project.year }}</td>
         <td class="px-3 py-2">₦{{ project.price }}</td>
         <td class="px-3 py-2">
           {% if project.status == 'APPROVED' %}

@@ -268,9 +268,8 @@ def register_page(request):
             user = form.save()
             messages.success(request, 'Account created successfully! Please log in to continue.')
             return redirect('login-page')
-        else:
-            # If form is invalid, pass errors to template
-            return render(request, 'core/register.html', {'form': form})
+    else:
+        form = UserRegistrationForm()
     
     return render(request, 'core/register.html', {'form': form})
 
