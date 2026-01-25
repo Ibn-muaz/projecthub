@@ -270,15 +270,16 @@ def register_page(request):
     return render(request, 'core/register.html', {'form': form})
 
 
+from projects.models import Department
+
 def department_list_page(request):
     faculty = request.GET.get('faculty')
+    departments = Department.objects.all()
     if faculty:
-        departments = FACULTY_DEPARTMENTS.get(faculty, [])
-    else:
-        departments = NSUK_DEPARTMENTS
+        departments = departments.filter(faculty__iexact=faculty)
 
     return render(request, 'core/department_list.html', {
-        'departments': departments,
+        'departments': departments.values_list('name', flat=True).distinct(),
         'faculty': faculty,
     })
 
