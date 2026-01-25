@@ -14,6 +14,7 @@ urlpatterns = [
     
     # Projects
     path('projects/', views.project_list, name='project-list-page'),
+    path('departments/', views.department_list_page, name='department-list-page'),
     path('projects/<slug:slug>/', views.project_detail, name='project-detail'),
     
     # Dashboard

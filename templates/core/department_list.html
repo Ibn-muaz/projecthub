@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Departments in {{ faculty|default:'All Faculties' }} | {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-slate-800">
+      Departments in {{ faculty|default:'All Faculties' }}
+    </h1>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for department in departments %}
+      <a href="{% url 'project-list-page' %}?department={{ department|urlencode }}"
+         class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+        <h3 class="text-lg font-semibold text-slate-700">{{ department }}</h3>
+      </a>
+    {% empty %}
+      <p class="text-slate-500">No departments found for this faculty.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

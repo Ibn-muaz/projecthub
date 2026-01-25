@@ -15,11 +15,7 @@ from projects.forms import ProjectMaterialAdminForm
 
 
 def landing_page(request):
-    featured_projects = ProjectMaterial.objects.filter(
-        status=ProjectMaterial.Status.APPROVED
-    ).order_by('-download_count')[:6]
     return render(request, 'core/landing.html', {
-        'featured_projects': featured_projects,
         'faculty_departments': FACULTY_DEPARTMENTS,
     })
 
@@ -272,6 +268,19 @@ def register_page(request):
         form = UserRegistrationForm()
     
     return render(request, 'core/register.html', {'form': form})
+
+
+def department_list_page(request):
+    faculty = request.GET.get('faculty')
+    if faculty:
+        departments = FACULTY_DEPARTMENTS.get(faculty, [])
+    else:
+        departments = NSUK_DEPARTMENTS
+
+    return render(request, 'core/department_list.html', {
+        'departments': departments,
+        'faculty': faculty,
+    })
 
 
 def debug_departments(request):
