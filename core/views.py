@@ -9,7 +9,7 @@ from django.db.models import Q
 
 from accounts.forms import UserRegistrationForm
 
-from projects.models import ProjectMaterial
+from projects.models import ProjectMaterial, Department
 from projects.constants import NSUK_DEPARTMENTS, FACULTY_DEPARTMENTS
 from projects.forms import ProjectMaterialAdminForm
 
