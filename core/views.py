@@ -273,14 +273,25 @@ def register_page(request):
 from projects.models import Department
 
 def department_list_page(request):
-    faculty = request.GET.get('faculty')
-    departments = Department.objects.all()
-    if faculty:
-        departments = departments.filter(faculty__iexact=faculty)
+    faculty_query = request.GET.get('faculty')
+    
+    # Fetch all departments and group them by faculty
+    departments_by_faculty = {}
+    all_departments = Department.objects.all().order_by('faculty', 'name')
+    
+    for dept in all_departments:
+        faculty = dept.faculty or 'Uncategorized'
+        if faculty not in departments_by_faculty:
+            departments_by_faculty[faculty] = []
+        departments_by_faculty[faculty].append(dept)
+        
+    # If a specific faculty is requested, filter the dictionary
+    if faculty_query:
+        departments_by_faculty = {faculty_query: departments_by_faculty.get(faculty_query, [])}
 
     return render(request, 'core/department_list.html', {
-        'departments': departments.values_list('name', flat=True).distinct(),
-        'faculty': faculty,
+        'departments_by_faculty': departments_by_faculty,
+        'faculty_query': faculty_query,
     })
 
 
