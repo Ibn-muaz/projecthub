@@ -3,8 +3,8 @@
 
 {% block content %}
 <div class="mb-8">
-  <h1 class="text-3xl font-bold text-slate-900 mb-2">Browse Projects</h1>
-  <p class="text-slate-600">Discover {{ projects|length }}+ quality projects for your academic needs</p>
+  <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Browse Projects</h1>
+  <p class="text-sm sm:text-base text-slate-600">Discover {{ projects|length }}+ quality projects for your academic needs</p>
 </div>
 
 <!-- Stats Bar -->
@@ -84,10 +84,10 @@
         placeholder="University of...">
     </div>
 
-    <!-- Hidden on mobile, shown on desktop -->
-    <div class="md:col-span-5 flex justify-end space-x-3 pt-2">
+    <!-- Buttons -->
+    <div class="md:col-span-5 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-2">
       <a href="{% url 'project-list-page' %}"
-        class="inline-flex items-center px-4 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+        class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd"
             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -96,7 +96,7 @@
         Clear Filters
       </a>
       <button type="submit"
-        class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+        class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd"
             d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
@@ -289,25 +289,20 @@
 </div>
 
 <script>
-  const toggleFilters = document.getElementById('toggleFilters');
-  const filterForm = document.getElementById('filterForm');
-  const filterIcon = document.getElementById('filterIcon');
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleFilters = document.getElementById('toggleFilters');
+    const filterForm = document.getElementById('filterForm');
+    const filterIcon = document.getElementById('filterIcon');
 
-  toggleFilters?.addEventListener('click', () => {
-    filterForm.classList.toggle('hidden');
-    filterIcon.style.transform = filterForm.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
-  });
-
-  // Initialize filter form visibility based on screen size
-  function updateFilterVisibility() {
-    if (window.innerWidth >= 768) {
-      filterForm.classList.remove('hidden');
-    } else {
+    // Hide form on mobile by default
+    if (window.innerWidth < 768) {
       filterForm.classList.add('hidden');
     }
-  }
 
-  window.addEventListener('resize', updateFilterVisibility);
-  updateFilterVisibility(); // Initial check
+    toggleFilters?.addEventListener('click', () => {
+      filterForm.classList.toggle('hidden');
+      filterIcon.style.transform = filterForm.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  });
 </script>
 {% endblock %}

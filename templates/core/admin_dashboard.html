@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="{% url 'admin-projects-page' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+          <a href="{% url 'admin-project-list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
             View All →
           </a>
         </div>
@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="{% url 'admin-projects-page' %}?status=pending"
+          <a href="{% url 'admin-project-list' %}?status=pending"
             class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">
             Review Now →
           </a>
@@ -90,7 +90,7 @@
         <div class="bg-white rounded-xl shadow-md p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div class="grid grid-cols-2 gap-4">
-            <a href="{% url 'admin-projects-create' %}"
+            <a href="{% url 'admin-project-create' %}"
               class="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 group">
               <div
                 class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center mb-3 transition-colors duration-200">
@@ -99,7 +99,7 @@
               <span class="font-medium text-gray-900">Add Project</span>
             </a>
 
-            <a href="{% url 'admin-projects-page' %}"
+            <a href="{% url 'admin-project-list' %}"
               class="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200 group">
               <div
                 class="w-10 h-10 rounded-full bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-3 transition-colors duration-200">
