@@ -15,8 +15,18 @@ from projects.forms import ProjectMaterialAdminForm
 
 
 def landing_page(request):
+    # Fetch all departments and group them by faculty
+    departments_by_faculty = {}
+    all_departments = Department.objects.all().order_by('faculty', 'name')
+    
+    for dept in all_departments:
+        faculty = dept.faculty or 'Uncategorized'
+        if faculty not in departments_by_faculty:
+            departments_by_faculty[faculty] = []
+        departments_by_faculty[faculty].append(dept)
+
     return render(request, 'core/landing.html', {
-        'faculty_departments': FACULTY_DEPARTMENTS,
+        'faculty_departments': departments_by_faculty,
     })
 
 
@@ -32,7 +42,10 @@ def project_list(request):
     project_type = request.GET.get('project_type')
 
     if q:
-        qs = qs.filter(title__icontains=q)
+        qs = qs.filter(
+            Q(title__icontains=q) |
+            Q(department__name__icontains=q)
+        )
     if department:
         qs = qs.filter(department__name__iexact=department)
     if faculty:

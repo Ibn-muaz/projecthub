@@ -134,9 +134,9 @@
           <ul class="space-y-3">
             {% for dept in depts|slice:":5" %}
             <li>
-              <a href="{% url 'project-list-page' %}?department={{ dept|urlencode }}"
+              <a href="{% url 'project-list-page' %}?department={{ dept.name|urlencode }}"
                 class="flex items-center justify-between text-gray-700 hover:text-sky-700 group-hover:text-gray-800 transition-colors duration-200">
-                <span class="text-sm font-medium truncate">{{ dept }}</span>
+                <span class="text-sm font-medium truncate">{{ dept.name }}</span>
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-sky-500 flex-shrink-0" fill="none"
                   stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
