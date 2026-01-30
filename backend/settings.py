@@ -15,7 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ENVIRONMENT DETECTION
 # -------------------------------------------------------------------
 IS_RENDER = 'RENDER' in os.environ
-IS_LOCAL_DEV = not IS_RENDER
+IS_PYTHONANYWHERE = 'PYTHONANYWHERE_DOMAIN' in os.environ or 'PYTHONANYWHERE_SITE' in os.environ
+IS_LOCAL_DEV = not IS_RENDER and not IS_PYTHONANYWHERE
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -27,7 +28,8 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-pro
 # Debug mode (should be False in production unless explicitly enabled)
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,projecthub-45pr.onrender.com', cast=Csv())
+# Add PythonAnywhere to allowed hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.pythonanywhere.com,*.onrender.com', cast=Csv())
 
 # Application definition
 
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,20 +85,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # -------------------------------------------------------------------
-# DATABASE CONFIGURATION - SIMPLIFIED
+# DATABASE CONFIGURATION - ROBUST
 # -------------------------------------------------------------------
-# Use DATABASE_URL if available, otherwise use SQLite
 import dj_database_url
 
-DATABASE_URL = config('DATABASE_URL', default=None)
+DATABASE_URL = config('DATABASE_URL', default='')
+
 if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': dj_database_url.parse(DATABASE_URL)
     }
+    # Add extra options
+    DATABASES['default']['CONN_MAX_AGE'] = 600
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 else:
     DATABASES = {
         'default': {
@@ -131,10 +133,13 @@ USE_I18N = True
 USE_TZ = True
 
 # -------------------------------------------------------------------
-# STATIC & MEDIA FILES - FIXED FOR RENDER
+# STATIC & MEDIA FILES - CONFIGURED FOR PRODUCTION
 # -------------------------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise is excellent for Render, but PythonAnywhere users 
+# can also configure static mapping in their Web Dashboard.
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
@@ -148,7 +153,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SECURITY SETTINGS - SIMPLIFIED
 # -------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = [
-    'https://projecthub-45pr.onrender.com',
+    'https://*.pythonanywhere.com',
     'https://*.onrender.com',
 ]
 
