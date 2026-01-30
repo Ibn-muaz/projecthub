@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'accounts',
     'projects',
     'core',
-    'payments',
 ]
 
 MIDDLEWARE = [
@@ -97,7 +96,6 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-    print("✅ Using PostgreSQL database from DATABASE_URL")
 else:
     DATABASES = {
         'default': {
@@ -105,7 +103,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    print("⚠️  Using SQLite database (local development)")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -223,13 +220,3 @@ LOGGING = {
         },
     },
 }
-
-# -------------------------------------------------------------------
-# ENVIRONMENT INFORMATION
-# -------------------------------------------------------------------
-print(f"\n{'='*60}")
-print(f"Environment: {'PRODUCTION (Render)' if IS_RENDER else 'LOCAL DEVELOPMENT'}")
-print(f"Debug Mode: {DEBUG}")
-print(f"Database Engine: {DATABASES['default']['ENGINE']}")
-print(f"Allowed Hosts: {ALLOWED_HOSTS}")
-print(f"{'='*60}\n")

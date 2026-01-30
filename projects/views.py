@@ -159,7 +159,11 @@ class PaymentInitView(APIView):
             'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
             'Content-Type': 'application/json',
         }
-        callback_url = request.build_absolute_uri("/payments/confirm/")
+        try:
+            callback_url = request.build_absolute_uri(reverse('payment-confirm'))
+        except:
+            callback_url = request.build_absolute_uri("/payment/confirm/")
+            
         data = {
             'email': user.email,
             'amount': amount_kobo,

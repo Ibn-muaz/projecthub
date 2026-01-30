@@ -79,11 +79,22 @@
       return;
     }
 
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-      window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
-      return;
+    // Get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
     }
+    const csrftoken = getCookie('csrftoken');
 
     try {
       // 1) Verify payment
@@ -91,13 +102,14 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken,
+          'X-CSRFToken': csrftoken,
         },
+        credentials: 'include',
         body: JSON.stringify({ reference }),
       });
       const verifyData = await verifyResp.json();
       
-      if (!verifyResp.ok || verifyData.status !== 'PAID') {
+      if (!verifyResp.ok || (verifyData.status !== 'PAID' && verifyData.status !== 'paid')) {
         loadingState.classList.add('hidden');
         errorState.classList.remove('hidden');
         errorMessage.textContent = verifyData.detail || 'Payment verification failed. Please contact support if you were charged.';
@@ -112,8 +124,9 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken,
+          'X-CSRFToken': csrftoken,
         },
+        credentials: 'include',
         body: JSON.stringify({ project_id: Number(purchaseProjectId), download_type: 'document' }),
       });
       const dlData = await dlResp.json();

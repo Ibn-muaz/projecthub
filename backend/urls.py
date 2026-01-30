@@ -44,9 +44,6 @@ urlpatterns = [
 
     # Core App (Web pages)
     path('', include('core.urls')),
-
-    # Payments App API
-    path('api/payments/', include('payments.urls')),
     
     # Django Rest Framework auth URLs (for browsable API)
     path('api-auth/', include('rest_framework.urls')),

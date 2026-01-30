@@ -16,4 +16,10 @@ python manage.py collectstatic --no-input --clear
 echo "🔄 Running migrations..."
 python manage.py migrate --no-input
 
+# Populate departments and seed sample projects
+echo "📂 Populating departments..."
+python manage.py populate_departments
+echo "🌱 Seeding sample projects..."
+python manage.py seed_projects
+
 echo "✅ Build completed!"
