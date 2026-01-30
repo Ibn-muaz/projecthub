@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Departments</title>
+</head>
+<body>
+    <h1>Departments by Faculty</h1>
+    <p>Total Departments: {{ total_departments }}</p>
+
+    {% for faculty, depts in faculty_departments.items %}
+        <h2>{{ faculty }}</h2>
+        <ul>
+            {% for dept_name in depts %}
+                <li>{{ dept_name }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <h2>All Departments</h2>
+    <ul>
+        {% for dept in departments %}
+            <li>{{ dept.name }} ({{ dept.faculty|default:"No Faculty" }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

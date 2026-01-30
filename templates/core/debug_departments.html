@@ -1,23 +1,23 @@
 <h1>Department Debug Information</h1>
 
-<h2>Faculty Names in Database</h2>
-<ul>
-{% for faculty in faculty_names %}
-    <li>{{ faculty }}</li>
-{% empty %}
-    <li>No faculty names found in database</li>
-{% endfor %}
-</ul>
-
 <h2>Departments by Faculty</h2>
-{% for faculty, depts in faculty_departments.items %}
-    <h3>{{ faculty }} ({{ depts|length }} departments)</h3>
+{% for faculty in faculty_names %}
+    <h3>{{ faculty }} ({{ faculty_departments|get_item:faculty|length }} departments)</h3>
     <ul>
-    {% for dept in depts %}
-        <li>{{ dept }}</li>
+    {% for dept_name in faculty_departments|get_item:faculty %}
+        <li>{{ dept_name }}</li>
     {% endfor %}
     </ul>
 {% endfor %}
+
+{% if 'No Faculty' in faculty_departments %}
+    <h3>No Faculty ({{ faculty_departments|get_item:'No Faculty'|length }} departments)</h3>
+    <ul>
+    {% for dept_name in faculty_departments|get_item:'No Faculty' %}
+        <li>{{ dept_name }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
 
 <h2>All Departments ({{ total_departments }})</h2>
 <table border="1">
@@ -34,32 +34,3 @@
     </tr>
     {% endfor %}
 </table>
-
-<h2>Comparison with Constants</h2>
-<h3>Expected Faculty Names from Constants</h3>
-<ul>
-{% for faculty in "Faculty of Administration,Faculty of Arts,Faculty of Education,Faculty of Environmental Science,Faculty of Law,Faculty of Natural and Applied Sciences,Faculty of Social Sciences,Faculty of Medical and Health Sciences,Faculty of Agriculture".split %}
-    <li>{{ faculty }}</li>
-{% endfor %}
-</ul>
-
-<h3>Missing Faculty Names</h3>
-<p>Faculty names in constants but not in database:</p>
-<ul>
-{% for faculty in "Faculty of Administration,Faculty of Arts,Faculty of Education,Faculty of Environmental Science,Faculty of Law,Faculty of Natural and Applied Sciences,Faculty of Social Sciences,Faculty of Medical and Health Sciences,Faculty of Agriculture".split %}
-    {% if faculty not in faculty_names %}
-        <li style="color: red;">{{ faculty }}</li>
-    {% endif %}
-{% endfor %}
-</ul>
-
-<p>Faculty names in database but not in constants:</p>
-<ul>
-{% for faculty in faculty_names %}
-    {% if faculty not in "Faculty of Administration,Faculty of Arts,Faculty of Education,Faculty of Environmental Science,Faculty of Law,Faculty of Natural and Applied Sciences,Faculty of Social Sciences,Faculty of Medical and Health Sciences,Faculty of Agriculture".split %}
-        <li style="color: orange;">{{ faculty }}</li>
-    {% endif %}
-{% empty %}
-    <li>No faculty names found in database</li>
-{% endfor %}
-</ul>

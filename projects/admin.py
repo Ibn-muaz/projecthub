@@ -22,6 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(ProjectMaterial)
 class ProjectMaterialAdmin(admin.ModelAdmin):
     form = ProjectMaterialAdminForm
+    autocomplete_fields = ['department']
     list_display = ['title', 'department', 'status', 'price', 'download_count', 'created_at']
     list_filter = ['status', 'department', 'category', 'project_type', 'year']
     search_fields = ['title', 'abstract', 'description', 'keywords']

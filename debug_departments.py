@@ -9,13 +9,13 @@ def debug_departments(request):
     # Group departments by faculty
     faculty_departments = {}
     for dept in departments:
-        faculty = dept.faculty or 'No Faculty'
+        faculty = dept.faculty if dept.faculty else 'No Faculty'
         if faculty not in faculty_departments:
             faculty_departments[faculty] = []
         faculty_departments[faculty].append(dept.name)
     
-    # Get unique faculty names
-    faculty_names = list(set(dept.faculty for dept in departments if dept.faculty))
+    # Get unique faculty names, excluding 'No Faculty'
+    faculty_names = sorted([f for f in faculty_departments.keys() if f != 'No Faculty'])
     
     context = {
         'departments': departments,

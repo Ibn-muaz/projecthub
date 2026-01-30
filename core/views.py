@@ -9,14 +9,23 @@ from django.db.models import Q
 
 from accounts.forms import UserRegistrationForm
 
-from projects.models import ProjectMaterial
-from projects.constants import NSUK_DEPARTMENTS, FACULTY_DEPARTMENTS
+from projects.models import ProjectMaterial, Department
+from projects.constants import NSUK_DEPARTMENTS
 from projects.forms import ProjectMaterialAdminForm
 
 
 def landing_page(request):
+    # Fetch all active departments and group them by faculty
+    departments = Department.objects.filter(is_active=True).order_by('name')
+    faculty_departments = {}
+    for dept in departments:
+        faculty = dept.faculty or 'Other'
+        if faculty not in faculty_departments:
+            faculty_departments[faculty] = []
+        faculty_departments[faculty].append(dept)
+    
     return render(request, 'core/landing.html', {
-        'faculty_departments': FACULTY_DEPARTMENTS,
+        'faculty_departments': faculty_departments,
     })
 
 

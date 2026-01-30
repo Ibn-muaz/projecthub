@@ -54,7 +54,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,7 +88,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Use DATABASE_URL if available, otherwise use SQLite
 import dj_database_url
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = config('DATABASE_URL', default=None)
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
@@ -192,6 +191,11 @@ SIMPLE_JWT = {
 # CORS CONFIGURATION
 # -------------------------------------------------------------------
 CORS_ALLOW_CREDENTIALS = True
+# In production, you should set this to a list of allowed origins.
+# For example:
+# CORS_ALLOWED_ORIGINS = [
+#     "https://your-frontend-domain.com",
+# ]
 CORS_ALLOW_ALL_ORIGINS = True  # TEMPORARY - CHANGE LATER
 
 # -------------------------------------------------------------------
