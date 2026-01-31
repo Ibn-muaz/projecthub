@@ -15,8 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ENVIRONMENT DETECTION
 # -------------------------------------------------------------------
 IS_RENDER = 'RENDER' in os.environ
-IS_PYTHONANYWHERE = 'PYTHONANYWHERE_DOMAIN' in os.environ or 'PYTHONANYWHERE_SITE' in os.environ
-IS_LOCAL_DEV = not IS_RENDER and not IS_PYTHONANYWHERE
+IS_LOCAL_DEV = not IS_RENDER
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -28,8 +27,8 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-pro
 # Debug mode (should be False in production unless explicitly enabled)
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Add PythonAnywhere to allowed hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.pythonanywhere.com,*.onrender.com', cast=Csv())
+# Add Render to allowed hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.onrender.com', cast=Csv())
 
 # Application definition
 
@@ -138,8 +137,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise is excellent for Render, but PythonAnywhere users 
-# can also configure static mapping in their Web Dashboard.
+# WhiteNoise is used to serve static files on Render
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
@@ -153,7 +151,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SECURITY SETTINGS - SIMPLIFIED
 # -------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.pythonanywhere.com',
     'https://*.onrender.com',
 ]
 

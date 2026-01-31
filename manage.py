@@ -6,19 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    # Try to load .env from the project root
     import dotenv
-    from pathlib import Path
-    
-    BASE_DIR = Path(__file__).resolve().parent
-    env_path = BASE_DIR / '.env'
-    
-    if env_path.exists():
-        dotenv.load_dotenv(env_path)
-    else:
-        # Fallback to standard search if path is not found directly
-        dotenv.load_dotenv()
-
+    dotenv.load_dotenv()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
     try:
         from django.core.management import execute_from_command_line
