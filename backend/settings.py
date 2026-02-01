@@ -25,8 +25,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-pro
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Debug mode (should be False in production unless explicitly enabled)
-# TEMPORARILY SET TO TRUE FOR RENDER DIAGNOSIS
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Add Render to allowed hosts
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.onrender.com', cast=Csv())
@@ -97,9 +96,13 @@ if DATABASE_URL:
             default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=True if IS_RENDER else False
         )
     }
+    # Ensure SSL is handled via the connection string or default
+    if IS_RENDER:
+        DATABASES['default']['OPTIONS'] = {
+            'sslmode': 'require',
+        }
 else:
     DATABASES = {
         'default': {
