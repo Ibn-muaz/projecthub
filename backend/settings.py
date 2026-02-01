@@ -87,8 +87,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # DATABASE CONFIGURATION - ROBUST
 # -------------------------------------------------------------------
 import dj_database_url
+import os
 
-DATABASE_URL = config('DATABASE_URL', default='')
+# Prioritize Render's environment variable directly
+DATABASE_URL = os.environ.get('DATABASE_URL') or config('DATABASE_URL', default='')
 
 if DATABASE_URL:
     DATABASES = {
@@ -98,11 +100,13 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-    # Ensure SSL is handled via the connection string or default
+    # For Render/Neon, ensure SSL is handled
     if IS_RENDER:
-        DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
-        }
+        # Check if the URL already has an sslmode parameter
+        if 'sslmode' not in DATABASE_URL:
+            DATABASES['default']['OPTIONS'] = {
+                'sslmode': 'require',
+            }
 else:
     DATABASES = {
         'default': {
